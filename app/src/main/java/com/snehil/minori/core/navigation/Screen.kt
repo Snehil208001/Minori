@@ -10,4 +10,8 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object TrendingProduct : Screen("trending_products")
     object DealsOfTheDay : Screen("deals_of_the_day")
+    object ArtisanSpotlight : Screen("artisan_spotlight")
+    object NewInStore : Screen("new_in_store")
+    object PotteryPromo : Screen("pottery_promo")
+    object NewArrivals : Screen("new_arrivals")
 }

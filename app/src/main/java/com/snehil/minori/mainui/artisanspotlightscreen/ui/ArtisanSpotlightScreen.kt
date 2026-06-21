@@ -1,4 +1,4 @@
-package com.snehil.minori.mainui.dealsofthedayscreen.ui
+package com.snehil.minori.mainui.artisanspotlightscreen.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -29,8 +29,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -52,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -60,8 +57,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -69,38 +66,37 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.snehil.minori.mainui.authentication.SpacerHeight
 import com.snehil.minori.mainui.authentication.SpacerWidth
-import com.snehil.minori.mainui.dealsofthedayscreen.model.Deal
-import com.snehil.minori.mainui.dealsofthedayscreen.viewmodel.DealsEffect
-import com.snehil.minori.mainui.dealsofthedayscreen.viewmodel.DealsOfTheDayScreenViewModel
+import com.snehil.minori.mainui.artisanspotlightscreen.model.ArtisanProduct
+import com.snehil.minori.mainui.artisanspotlightscreen.viewmodel.ArtisanSpotlightEffect
+import com.snehil.minori.mainui.artisanspotlightscreen.viewmodel.ArtisanSpotlightViewModel
 import com.snehil.minori.mainui.homescreen.ui.MinoriBottomNavigation
 import com.snehil.minori.ui.theme.CharcoalText
 import com.snehil.minori.ui.theme.EarthyStone
 import com.snehil.minori.ui.theme.SandCream
-import com.snehil.minori.ui.theme.SoftTerracotta
+import com.snehil.minori.ui.theme.SageGreen
 
 @Composable
-fun DealsOfTheDayScreen(
+fun ArtisanSpotlightScreen(
     onNavigateBack: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    viewModel: DealsOfTheDayScreenViewModel = hiltViewModel()
+    viewModel: ArtisanSpotlightViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                DealsEffect.NavigateBack -> onNavigateBack()
+                ArtisanSpotlightEffect.NavigateBack -> onNavigateBack()
             }
         }
     }
 
     val isDark = isSystemInDarkTheme()
-    // Peach-blush custom background theme for Deals of the Day
-    val backgroundColor = if (isDark) Color(0xFF251917) else Color(0xFFFFF6F4)
+    val backgroundColor = if (isDark) Color(0xFF1B1D16) else Color(0xFFFAFBF7) // Soft sage tint background
     val textColor = if (isDark) SandCream else CharcoalText
-    val descColor = if (isDark) Color(0xFFC7BDBB) else EarthyStone
-    val accentColor = if (isDark) Color(0xFFFCA5A5) else Color(0xFFDC2626) // Vivid red/coral accent
-    val cardBg = if (isDark) Color(0xFF332321) else Color.White
+    val descColor = if (isDark) Color(0xFFB1B8AA) else EarthyStone
+    val accentColor = if (isDark) Color(0xFFA3B18A) else SageGreen
+    val cardBg = if (isDark) Color(0xFF262A20) else Color.White
 
     var sortExpanded by remember { mutableStateOf(false) }
     var filterExpanded by remember { mutableStateOf(false) }
@@ -128,7 +124,7 @@ fun DealsOfTheDayScreen(
                 .statusBarsPadding()
                 .padding(paddingValues)
         ) {
-            // 1. Top Bar Header
+            // 1. Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -164,15 +160,15 @@ fun DealsOfTheDayScreen(
                 SpacerWidth(16)
 
                 Text(
-                    text = "Deals of the Day",
-                    fontSize = 22.sp,
+                    text = "Artisan Spotlight",
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
                     color = textColor
                 )
             }
 
-            // 2. Search Box
+            // 2. Search box
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
@@ -182,8 +178,8 @@ fun DealsOfTheDayScreen(
                     .height(54.dp),
                 placeholder = {
                     Text(
-                        text = "Search flash sales...",
-                        color = if (isDark) Color(0xFF9E8F8D) else Color(0xFF9CA3AF),
+                        text = "Search heritage weaver crafts...",
+                        color = if (isDark) Color(0xFF6B725E) else Color(0xFF9CA3AF),
                         fontSize = 14.sp
                     )
                 },
@@ -191,7 +187,7 @@ fun DealsOfTheDayScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = if (isDark) Color(0xFFC7BDBB) else Color(0xFF6B7280),
+                        tint = if (isDark) Color(0xFF9CA3AF) else Color(0xFF6B7280),
                         modifier = Modifier.size(20.dp)
                     )
                 },
@@ -203,19 +199,12 @@ fun DealsOfTheDayScreen(
                     focusedContainerColor = cardBg,
                     unfocusedContainerColor = cardBg,
                     focusedBorderColor = accentColor,
-                    unfocusedBorderColor = if (isDark) Color(0xFF4C3836) else Color(0xFFE5E7EB),
+                    unfocusedBorderColor = if (isDark) Color(0xFF383F2F) else Color(0xFFE5E7EB),
                     cursorColor = accentColor
                 )
             )
 
-            // 3. Segmented Urgency Timer Header
-            SegmentedTimerHeader(
-                secondsRemaining = uiState.secondsRemaining,
-                isDark = isDark,
-                accentColor = accentColor
-            )
-
-            // 4. Sort & Filter Row
+            // 3. Sort & Filter Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -224,7 +213,7 @@ fun DealsOfTheDayScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${uiState.deals.size} Deals Available",
+                    text = "${uiState.products.size} Master Crafts",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = textColor
@@ -290,7 +279,7 @@ fun DealsOfTheDayScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Category: ${uiState.selectedCategory}",
+                                text = "Type: ${uiState.selectedCategory}",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textColor
@@ -329,8 +318,8 @@ fun DealsOfTheDayScreen(
 
             SpacerHeight(4)
 
-            // 5. Scrollable Layout with Featured Hero Card at Top & 2-column Grid below
-            if (uiState.deals.isEmpty()) {
+            // 4. Products Grid
+            if (uiState.products.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -338,15 +327,12 @@ fun DealsOfTheDayScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No deals found matching your filters.",
+                        text = "No heritage crafts found matching filters.",
                         color = descColor,
                         fontSize = 14.sp
                     )
                 }
             } else {
-                val featuredDeal = remember(uiState.deals) { uiState.deals.firstOrNull() }
-                val gridDeals = remember(uiState.deals) { uiState.deals.drop(1) }
-
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -356,29 +342,16 @@ fun DealsOfTheDayScreen(
                         .fillMaxSize()
                         .weight(1f)
                 ) {
-                    // Span full width for Featured Deal card
-                    if (featuredDeal != null) {
-                        item(span = { GridItemSpan(2) }) {
-                            FeaturedDealCard(
-                                deal = featuredDeal,
-                                isWishlisted = uiState.wishlistedIds.contains(featuredDeal.id),
-                                onWishlistToggle = { viewModel.toggleWishlist(featuredDeal.id) },
-                                isDark = isDark,
-                                cardBg = cardBg,
-                                textColor = textColor,
-                                descColor = descColor,
-                                accentColor = accentColor
-                            )
-                        }
+                    // Full-width Weaver Story Header
+                    item(span = { GridItemSpan(2) }) {
+                        ArtisanBiographyBanner(isDark = isDark, accentColor = accentColor)
                     }
 
-                    // Display rest of deals in 2-column grid
-                    items(gridDeals, key = { it.id }) { deal ->
-                        DealFlashCard(
-                            deal = deal,
-                            isWishlisted = uiState.wishlistedIds.contains(deal.id),
-                            onWishlistToggle = { viewModel.toggleWishlist(deal.id) },
-                            isDark = isDark,
+                    items(uiState.products, key = { it.id }) { product ->
+                        ArtisanGridCard(
+                            product = product,
+                            isWishlisted = uiState.wishlistedIds.contains(product.id),
+                            onWishlistToggle = { viewModel.toggleWishlist(product.id) },
                             cardBg = cardBg,
                             textColor = textColor,
                             descColor = descColor,
@@ -392,264 +365,49 @@ fun DealsOfTheDayScreen(
 }
 
 @Composable
-fun SegmentedTimerHeader(
-    secondsRemaining: Int,
-    isDark: Boolean,
-    accentColor: Color
-) {
-    val total = secondsRemaining
-    val h = total / 3600
-    val m = (total % 3600) / 60
-    val s = total % 60
-
+fun ArtisanBiographyBanner(isDark: Boolean, accentColor: Color) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(
-                Brush.horizontalGradient(
-                    colors = if (isDark) {
-                        listOf(Color(0xFF4C1E1A), Color(0xFF6B2D25))
-                    } else {
-                        listOf(Color(0xFFFEF2F2), Color(0xFFFEE2E2))
-                    }
-                )
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(if (isDark) Color(0xFF282E21) else Color(0xFFF1F5EB))
+            .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "FLASH SALE ENDING IN:",
-                    color = if (isDark) Color(0xFFFCA5A5) else Color(0xFFDC2626),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 1.sp
-                )
-                SpacerHeight(4)
-                Text(
-                    text = "Claim local pottery & art up to 50% off",
-                    color = if (isDark) Color(0xFFF3E8E6) else CharcoalText,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
-            // Segmented HH : MM : SS blocks
+        Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                TimerBlock(value = String.format("%02d", h), isDark = isDark)
-                TimerDivider(isDark = isDark)
-                TimerBlock(value = String.format("%02d", m), isDark = isDark)
-                TimerDivider(isDark = isDark)
-                TimerBlock(value = String.format("%02d", s), isDark = isDark)
-            }
-        }
-    }
-}
-
-@Composable
-fun TimerBlock(value: String, isDark: Boolean) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(if (isDark) Color(0xFFEF4444) else Color(0xFFDC2626))
-            .padding(horizontal = 8.dp, vertical = 6.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = value,
-            color = Color.White,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun TimerDivider(isDark: Boolean) {
-    Text(
-        text = ":",
-        color = if (isDark) Color(0xFFFCA5A5) else Color(0xFFDC2626),
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        modifier = Modifier.padding(horizontal = 3.dp)
-    )
-}
-
-@Composable
-fun FeaturedDealCard(
-    deal: Deal,
-    isWishlisted: Boolean,
-    onWishlistToggle: () -> Unit,
-    isDark: Boolean,
-    cardBg: Color,
-    textColor: Color,
-    descColor: Color,
-    accentColor: Color
-) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = cardBg),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = deal.drawableId),
-                    contentDescription = deal.title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-
-                // Featured Deal Ribbon tag
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .background(
-                            color = Color(0xFFDC2626),
-                            shape = RoundedCornerShape(bottomEnd = 12.dp)
-                        )
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Text(
-                        text = "DEAL OF THE HOUR • ${deal.discount}",
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Black
-                    )
+                // Procedural Spinning Loom Icon
+                Canvas(modifier = Modifier.size(20.dp)) {
+                    val cx = size.width / 2f
+                    val cy = size.height / 2f
+                    drawCircle(accentColor, radius = size.width * 0.4f, style = Stroke(width = size.width * 0.08f))
+                    drawLine(accentColor, start = androidx.compose.ui.geometry.Offset(cx - size.width * 0.3f, cy), end = androidx.compose.ui.geometry.Offset(cx + size.width * 0.3f, cy), strokeWidth = size.width * 0.08f)
+                    drawLine(accentColor, start = androidx.compose.ui.geometry.Offset(cx, cy - size.height * 0.3f), end = androidx.compose.ui.geometry.Offset(cx, cy + size.height * 0.3f), strokeWidth = size.width * 0.08f)
                 }
-
-                // Wishlist Toggle button
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(10.dp)
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.8f))
-                        .clickable { onWishlistToggle() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Wishlist",
-                        tint = if (isWishlisted) Color.Red else Color.Gray,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = deal.title,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = textColor,
-                        fontFamily = FontFamily.Serif
-                    )
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Star",
-                            tint = Color(0xFFFBBF24),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        SpacerWidth(2)
-                        Text(
-                            text = deal.rating.toString(),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = textColor
-                        )
-                    }
-                }
-
-                SpacerHeight(4)
-
+                SpacerWidth(8)
                 Text(
-                    text = deal.description,
-                    fontSize = 12.sp,
-                    color = descColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    text = "Meet Our Master Weavers",
+                    color = accentColor,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Serif
                 )
-
-                SpacerHeight(12)
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "₹${deal.price}",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Black,
-                                color = accentColor
-                            )
-                            SpacerWidth(6)
-                            Text(
-                                text = "₹${deal.originalPrice}",
-                                fontSize = 12.sp,
-                                color = descColor,
-                                textDecoration = TextDecoration.LineThrough
-                            )
-                        }
-                        Text(
-                            text = "Includes free shipping",
-                            fontSize = 10.sp,
-                            color = Color(0xFF16A34A),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Button(
-                        onClick = { /* Claim Deal */ },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = accentColor)
-                    ) {
-                        Text(
-                            text = "Claim Deal",
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
             }
+            SpacerHeight(6)
+            Text(
+                text = "Our featured weavers use vertical handlooms and organic linen thread. Every purchase directly sustains heritage craft communities spanning five generations.",
+                color = if (isDark) Color(0xFFC5CEBC) else CharcoalText,
+                fontSize = 11.sp,
+                lineHeight = 15.sp
+            )
         }
     }
 }
 
 @Composable
-fun DealFlashCard(
-    deal: Deal,
+fun ArtisanGridCard(
+    product: ArtisanProduct,
     isWishlisted: Boolean,
     onWishlistToggle: () -> Unit,
-    isDark: Boolean,
     cardBg: Color,
     textColor: Color,
     descColor: Color,
@@ -665,34 +423,16 @@ fun DealFlashCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(115.dp)
+                    .height(125.dp)
             ) {
                 Image(
-                    painter = painterResource(id = deal.drawableId),
-                    contentDescription = deal.title,
+                    painter = painterResource(id = product.drawableId),
+                    contentDescription = product.title,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
 
-                // Diagonal discount badge
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .background(
-                            color = Color(0xFFDC2626),
-                            shape = RoundedCornerShape(bottomEnd = 8.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        text = deal.discount,
-                        color = Color.White,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Black
-                    )
-                }
-
-                // Favorite overlay button
+                // Favorite overlay
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -707,7 +447,25 @@ fun DealFlashCard(
                         imageVector = if (isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Wishlist",
                         tint = if (isWishlisted) Color.Red else Color.Gray,
-                        modifier = Modifier.size(14.dp)
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
+
+                // Discount Badge overlay
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .background(
+                            color = accentColor,
+                            shape = RoundedCornerShape(topEnd = 6.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        text = product.discount,
+                        color = Color.White,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -717,8 +475,9 @@ fun DealFlashCard(
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
+                // Title
                 Text(
-                    text = deal.title,
+                    text = product.title,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
@@ -728,8 +487,9 @@ fun DealFlashCard(
 
                 SpacerHeight(2)
 
+                // Description
                 Text(
-                    text = deal.description,
+                    text = product.description,
                     fontSize = 10.sp,
                     color = descColor,
                     maxLines = 2,
@@ -739,59 +499,51 @@ fun DealFlashCard(
 
                 SpacerHeight(4)
 
-                // Star Rating
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Star",
-                        tint = Color(0xFFFBBF24),
-                        modifier = Modifier.size(11.dp)
-                    )
-                    SpacerWidth(2)
-                    Text(
-                        text = "${deal.rating} (${deal.reviewCount})",
-                        fontSize = 9.sp,
-                        color = descColor
-                    )
-                }
+                // Artisan Signature Badge
+                Text(
+                    text = "By ${product.artisanName}",
+                    fontSize = 9.sp,
+                    color = accentColor,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Medium
+                )
 
                 SpacerHeight(6)
 
-                // Price structure
+                // Price and Rating
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
                         Text(
-                            text = "₹${deal.price}",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = accentColor
+                            text = "₹${product.price}",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Black,
+                            color = textColor
                         )
                         Text(
-                            text = "₹${deal.originalPrice}",
+                            text = "₹${product.originalPrice}",
                             fontSize = 10.sp,
                             color = descColor,
                             textDecoration = TextDecoration.LineThrough
                         )
                     }
 
-                    // Card Action CTA Button
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(accentColor)
-                            .clickable { /* Buy Now action */ }
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star",
+                            tint = Color(0xFFFBBF24),
+                            modifier = Modifier.size(10.dp)
+                        )
+                        SpacerWidth(2)
                         Text(
-                            text = "Buy",
-                            color = Color.White,
+                            text = product.rating.toString(),
                             fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = textColor
                         )
                     }
                 }

@@ -78,7 +78,11 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToProfile: () -> Unit,
     onViewAllTrending: () -> Unit,
-    onViewAllDeals: () -> Unit
+    onViewAllDeals: () -> Unit,
+    onViewArtisanSpotlight: () -> Unit,
+    onViewNewInStore: () -> Unit,
+    onViewPotteryPromo: () -> Unit,
+    onViewNewArrivals: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -148,7 +152,12 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 5. Horizontal swipeable Pager Banners
-            HomeBannersPager(isDark = isDark, onViewAllTrending = onViewAllTrending)
+            HomeBannersPager(
+                isDark = isDark,
+                onViewAllDeals = onViewAllDeals,
+                onViewArtisanSpotlight = onViewArtisanSpotlight,
+                onViewNewInStore = onViewNewInStore
+            )
 
             SpacerHeight(24)
 
@@ -163,7 +172,7 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 8. Pottery & Tapestry Promo card ("Flat & Heels" equivalent)
-            HomePotteryPromoCard(isDark = isDark, textColor = textColor, onViewAllTrending = onViewAllTrending)
+            HomePotteryPromoCard(isDark = isDark, textColor = textColor, onViewPotteryPromo = onViewPotteryPromo)
 
             SpacerHeight(24)
 
@@ -178,12 +187,12 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 10. New Arrivals / Hot Sale banner
-            HomeHotSaleBanner(isDark = isDark, onViewAllTrending = onViewAllTrending)
+            HomeHotSaleBanner(isDark = isDark, onViewNewArrivals = onViewNewArrivals)
 
             SpacerHeight(24)
 
             // 11. Sponsored section
-            HomeSponsoredCard(isDark = isDark, cardBg = cardBg, textColor = textColor)
+            HomeSponsoredCard(isDark = isDark, cardBg = cardBg, textColor = textColor, onViewPotteryPromo = onViewPotteryPromo)
 
             SpacerHeight(24)
         }
@@ -594,7 +603,12 @@ fun HomeCategoriesRow(textColor: Color, isDark: Boolean, cardBg: Color) {
 
 // 5. Swipeable Horizontal Pager Banners
 @Composable
-fun HomeBannersPager(isDark: Boolean, onViewAllTrending: () -> Unit) {
+fun HomeBannersPager(
+    isDark: Boolean,
+    onViewAllDeals: () -> Unit,
+    onViewArtisanSpotlight: () -> Unit,
+    onViewNewInStore: () -> Unit
+) {
     val pagerState = rememberPagerState(pageCount = { 3 })
 
     LaunchedEffect(key1 = true) {
@@ -662,7 +676,13 @@ fun HomeBannersPager(isDark: Boolean, onViewAllTrending: () -> Unit) {
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color.White)
-                            .clickable { onViewAllTrending() }
+                            .clickable {
+                                when (page) {
+                                    0 -> onViewAllDeals()
+                                    1 -> onViewArtisanSpotlight()
+                                    2 -> onViewNewInStore()
+                                }
+                            }
                             .padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
                         Text(
@@ -1001,7 +1021,7 @@ fun HomeSpecialOffersCard(isDark: Boolean, cardBg: Color, textColor: Color) {
 fun HomePotteryPromoCard(
     isDark: Boolean,
     textColor: Color,
-    onViewAllTrending: () -> Unit
+    onViewPotteryPromo: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -1071,7 +1091,7 @@ fun HomePotteryPromoCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .background(Terracotta)
-                        .clickable { onViewAllTrending() }
+                        .clickable { onViewPotteryPromo() }
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(
@@ -1261,7 +1281,7 @@ fun HomeTrendingCard(
 
 // 10. Hot Summer Sale / New Arrivals Banner
 @Composable
-fun HomeHotSaleBanner(isDark: Boolean, onViewAllTrending: () -> Unit) {
+fun HomeHotSaleBanner(isDark: Boolean, onViewNewArrivals: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -1301,7 +1321,7 @@ fun HomeHotSaleBanner(isDark: Boolean, onViewAllTrending: () -> Unit) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0xFFFD5C63))
-                    .clickable { onViewAllTrending() }
+                    .clickable { onViewNewArrivals() }
                     .padding(horizontal = 14.dp, vertical = 8.dp)
             ) {
                 Text(
@@ -1346,7 +1366,12 @@ fun HomeHotSaleBanner(isDark: Boolean, onViewAllTrending: () -> Unit) {
 
 // 11. Sponsored Section Component
 @Composable
-fun HomeSponsoredCard(isDark: Boolean, cardBg: Color, textColor: Color) {
+fun HomeSponsoredCard(
+    isDark: Boolean,
+    cardBg: Color,
+    textColor: Color,
+    onViewPotteryPromo: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -1364,7 +1389,8 @@ fun HomeSponsoredCard(isDark: Boolean, cardBg: Color, textColor: Color) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(290.dp),
+                .height(290.dp)
+                .clickable { onViewPotteryPromo() },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = cardBg),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)

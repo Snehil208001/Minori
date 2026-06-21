@@ -28,16 +28,16 @@ sealed class DealsEffect {
 class DealsOfTheDayScreenViewModel @Inject constructor() : BaseViewModel<DealsState, DealsEffect>() {
 
     private val allDeals = listOf(
-        Deal(1, "Earthy Ceramic Bowl", "Hand-thrown clay bowl with natural white glaze.", 1250, 2500, "50% OFF", 4.7f, 154, R.drawable.ceramic_bowl, "Clayware"),
-        Deal(2, "Terracotta Clay Pitcher", "Traditional rustic pitcher for fresh water or decor.", 1600, 3200, "50% OFF", 4.9f, 89, R.drawable.clay_pitcher, "Clayware"),
-        Deal(3, "Glass Vase / Carafe", "Blown decanter in warm amber gradient shade.", 2650, 5300, "50% OFF", 4.5f, 43, R.drawable.glass_carafe, "Decor"),
-        Deal(4, "Oak Carved Chest", "Handcrafted organic frame drawer with brass keys.", 5700, 9500, "40% OFF", 4.8f, 21, R.drawable.oak_chest, "Furniture"),
-        Deal(5, "Handwoven Seagrass Basket", "Seagrass round storage basket with sturdy side handles.", 1050, 2100, "50% OFF", 4.6f, 78, R.drawable.woven_basket, "Accessories"),
-        Deal(6, "Boho Macrame Hanger", "Organic cotton woven plant hanger with wooden bead accents.", 750, 1500, "50% OFF", 4.7f, 134, R.drawable.macrame_hanger, "Decor"),
-        Deal(7, "Hand-glazed Clay Plate", "Speckled clay dinner side plate with raised outer lip.", 600, 1200, "50% OFF", 4.8f, 92, R.drawable.clay_plate, "Clayware"),
-        Deal(8, "Textured Linen Pillow", "Earthy linen square pillow cover with invisible zipper.", 1100, 2200, "50% OFF", 4.5f, 57, R.drawable.linen_pillow, "Textiles"),
-        Deal(9, "Rattan Lounge Chair", "Minimalist modern handwoven rattan armchair.", 6000, 12000, "50% OFF", 4.6f, 67, R.drawable.rattan_chair, "Furniture"),
-        Deal(10, "Speckled Clay Mug", "Cozy speckled mug with flat base and large handle.", 600, 1200, "50% OFF", 4.8f, 320, R.drawable.ceramic_mug, "Clayware")
+        Deal(1, "Handmade Clay Pitcher", "Warm Sage-wash handthrown rustic clay water pitcher.", 999, 1999, "50% OFF", 4.7f, 85, R.drawable.clay_pitcher, "Clayware"),
+        Deal(2, "Stained Amber Lantern", "Amber warm gradient stained glass lantern frame.", 1399, 2799, "50% OFF", 4.8f, 54, R.drawable.glass_carafe, "Decor"),
+        Deal(3, "Teak Wooden Coaster Set", "Set of 6 organic hand-sanded teak wood coasters.", 599, 1199, "50% OFF", 4.6f, 38, R.drawable.oak_chest, "Furniture"),
+        Deal(4, "Bohemian Macrame Hanger", "Woven cream plant hanger with wooden bead accents.", 499, 999, "50% OFF", 4.9f, 210, R.drawable.macrame_hanger, "Decor"),
+        Deal(5, "Earthy Glazed Clay Plate", "Speckled ceramic dining serving plate.", 399, 799, "50% OFF", 4.7f, 93, R.drawable.clay_plate, "Clayware"),
+        Deal(6, "Tasseled Cotton Hammock", "Relaxing woven rope organic white cream hammock.", 1999, 3999, "50% OFF", 4.8f, 76, R.drawable.wool_rug, "Textiles"),
+        Deal(7, "Earthy Clay Tea Mug", "Stoneware tea/coffee cup with sturdy flat base.", 299, 599, "50% OFF", 4.5f, 142, R.drawable.ceramic_mug, "Clayware"),
+        Deal(8, "Fringed Linen Pillow", "Woven beige soft linen cushion cover with zip.", 449, 899, "50% OFF", 4.6f, 68, R.drawable.linen_pillow, "Textiles"),
+        Deal(9, "Braided Seagrass Basket", "Woven storage basket with carry handles.", 699, 1399, "50% OFF", 4.8f, 122, R.drawable.woven_basket, "Accessories"),
+        Deal(10, "Beeswax Scented Candle", "Hand-poured candle in reusable rustic clay pot.", 549, 1099, "50% OFF", 4.9f, 310, R.drawable.boho_candle, "Decor")
     )
 
     override val initialState: DealsState = DealsState(deals = allDeals)

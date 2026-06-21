@@ -13,6 +13,10 @@ import com.snehil.minori.mainui.onboardingscreen.ui.OnboardingScreen
 import com.snehil.minori.mainui.profilescreen.ui.ProfileScreen
 import com.snehil.minori.mainui.splashscreen.ui.SplashScreen
 import com.snehil.minori.mainui.trendingproductscreen.ui.TrendingProductScreen
+import com.snehil.minori.mainui.artisanspotlightscreen.ui.ArtisanSpotlightScreen
+import com.snehil.minori.mainui.newinstorescreen.ui.NewInStoreScreen
+import com.snehil.minori.mainui.potterypromoscreen.ui.PotteryPromoScreen
+import com.snehil.minori.mainui.newarrivalsscreen.ui.NewArrivalsScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -86,6 +90,18 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onViewAllDeals = {
                     navController.navigate(Screen.DealsOfTheDay.route)
+                },
+                onViewArtisanSpotlight = {
+                    navController.navigate(Screen.ArtisanSpotlight.route)
+                },
+                onViewNewInStore = {
+                    navController.navigate(Screen.NewInStore.route)
+                },
+                onViewPotteryPromo = {
+                    navController.navigate(Screen.PotteryPromo.route)
+                },
+                onViewNewArrivals = {
+                    navController.navigate(Screen.NewArrivals.route)
                 }
             )
         }
@@ -116,5 +132,46 @@ fun NavGraph(navController: NavHostController) {
                 }
             )
         }
+        composable(route = Screen.ArtisanSpotlight.route) {
+            ArtisanSpotlightScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
+        composable(route = Screen.NewInStore.route) {
+            NewInStoreScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
+        composable(route = Screen.PotteryPromo.route) {
+            PotteryPromoScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
+        composable(route = Screen.NewArrivals.route) {
+            NewArrivalsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
     }
 }
+
