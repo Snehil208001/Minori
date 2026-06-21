@@ -22,11 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MinoriTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        NavGraph(navController = navController)
-                    }
-                }
+                NavGraph(navController = navController)
             }
         }
     }
