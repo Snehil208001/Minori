@@ -832,45 +832,13 @@ fun HomeDealCard(
                     .background(if (isDark) Color(0xFF1C1917) else SandCream),
                 contentAlignment = Alignment.Center
             ) {
-                // Vector drawn product inside container
-                Canvas(modifier = Modifier.size(60.dp)) {
-                    val w = size.width
-                    val h = size.height
-                    val cx = w / 2f
-                    val cy = h / 2f
-                    val paintCol = if (isDark) SoftTerracotta else Terracotta
-
-                    if (isVase) {
-                        // Pitcher shape
-                        val path = Path().apply {
-                            moveTo(cx - w * 0.12f, cy - h * 0.35f)
-                            lineTo(cx + w * 0.12f, cy - h * 0.35f)
-                            lineTo(cx + w * 0.08f, cy - h * 0.15f)
-                            cubicTo(cx + w * 0.35f, cy - h * 0.05f, cx + w * 0.35f, cy + h * 0.3f, cx + w * 0.15f, cy + h * 0.38f)
-                            lineTo(cx - w * 0.15f, cy + h * 0.38f)
-                            cubicTo(cx - w * 0.35f, cy + h * 0.3f, cx - w * 0.35f, cy - h * 0.05f, cx - w * 0.08f, cy - h * 0.15f)
-                            close()
-                        }
-                        drawPath(path = path, color = paintCol)
-                        // Handle
-                        val handlePath = Path().apply {
-                            moveTo(cx - w * 0.12f, cy - h * 0.1f)
-                            cubicTo(cx - w * 0.42f, cy - h * 0.1f, cx - w * 0.42f, cy + h * 0.25f, cx - w * 0.15f, cy + h * 0.25f)
-                        }
-                        drawPath(path = handlePath, color = paintCol, style = Stroke(width = w * 0.08f))
-                    } else {
-                        // Wide bowl shape
-                        val path = Path().apply {
-                            moveTo(cx - w * 0.45f, cy - h * 0.15f)
-                            lineTo(cx + w * 0.45f, cy - h * 0.15f)
-                            cubicTo(cx + w * 0.35f, cy + h * 0.32f, cx - w * 0.35f, cy + h * 0.32f, cx - w * 0.45f, cy - h * 0.15f)
-                            close()
-                        }
-                        drawPath(path = path, color = paintCol)
-                        // Base ring
-                        drawLine(paintCol, start = androidx.compose.ui.geometry.Offset(cx - w * 0.18f, cy + h * 0.28f), end = androidx.compose.ui.geometry.Offset(cx + w * 0.18f, cy + h * 0.28f), strokeWidth = w * 0.08f, cap = StrokeCap.Round)
-                    }
-                }
+                val imgRes = if (isVase) com.snehil.minori.R.drawable.clay_pitcher else com.snehil.minori.R.drawable.ceramic_bowl
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = imgRes),
+                    contentDescription = title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
             }
 
             // Product Meta
@@ -1195,42 +1163,13 @@ fun HomeTrendingCard(
                     .background(if (isDark) Color(0xFF1C1917) else SandCream),
                 contentAlignment = Alignment.Center
             ) {
-                // Vector drawn product inside card
-                Canvas(modifier = Modifier.size(60.dp)) {
-                    val w = size.width
-                    val h = size.height
-                    val cx = w / 2f
-                    val cy = h / 2f
-                    val paintCol = if (isDark) SoftTerracotta else Terracotta
-
-                    if (isChest) {
-                        // Chest box
-                        drawRoundRect(
-                            color = paintCol,
-                            size = androidx.compose.ui.geometry.Size(w * 0.75f, h * 0.5f),
-                            topLeft = androidx.compose.ui.geometry.Offset(cx - w * 0.375f, cy - h * 0.2f),
-                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(w * 0.05f)
-                        )
-                        // Middle key line
-                        drawLine(Color.White, start = androidx.compose.ui.geometry.Offset(cx, cy - h * 0.2f), end = androidx.compose.ui.geometry.Offset(cx, cy + h * 0.3f), strokeWidth = w * 0.06f)
-                        // Brass circular handles
-                        drawCircle(Color.White, radius = w * 0.07f, center = androidx.compose.ui.geometry.Offset(cx - w * 0.16f, cy + h * 0.05f))
-                        drawCircle(Color.White, radius = w * 0.07f, center = androidx.compose.ui.geometry.Offset(cx + w * 0.16f, cy + h * 0.05f))
-                    } else {
-                        // Decanter vase
-                        val path = Path().apply {
-                            moveTo(cx - w * 0.08f, cy - h * 0.38f)
-                            lineTo(cx + w * 0.08f, cy - h * 0.38f)
-                            lineTo(cx + w * 0.08f, cy - h * 0.1f)
-                            lineTo(cx + w * 0.3f, cy + h * 0.25f)
-                            quadraticTo(cx + w * 0.3f, cy + h * 0.38f, cx, cy + h * 0.38f)
-                            quadraticTo(cx - w * 0.3f, cy + h * 0.38f, cx - w * 0.3f, cy + h * 0.25f)
-                            lineTo(cx - w * 0.08f, cy - h * 0.1f)
-                            close()
-                        }
-                        drawPath(path = path, color = paintCol)
-                    }
-                }
+                val imgRes = if (isChest) com.snehil.minori.R.drawable.oak_chest else com.snehil.minori.R.drawable.glass_carafe
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = imgRes),
+                    contentDescription = title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
             }
 
             Column(modifier = Modifier.padding(12.dp)) {
@@ -1396,30 +1335,12 @@ fun HomeSponsoredCard(isDark: Boolean, cardBg: Color, textColor: Color) {
                         .background(if (isDark) Color(0xFF1C1917) else SandCream),
                     contentAlignment = Alignment.Center
                 ) {
-                    Canvas(modifier = Modifier.size(100.dp)) {
-                        val w = size.width
-                        val h = size.height
-                        val cx = w / 2f
-                        val cy = h / 2f
-                        val activeColor = if (isDark) SoftTerracotta else Terracotta
-
-                        // Hand spinning wheel illustration
-                        drawCircle(activeColor.copy(alpha = 0.2f), radius = w * 0.48f)
-                        drawCircle(activeColor, radius = w * 0.35f, style = Stroke(width = w * 0.05f))
-                        
-                        // Spin potter jar
-                        val jar = Path().apply {
-                            moveTo(cx - w * 0.15f, cy - h * 0.28f)
-                            lineTo(cx + w * 0.15f, cy - h * 0.28f)
-                            quadraticTo(cx + w * 0.1f, cy - h * 0.12f, cx + w * 0.1f, cy)
-                            cubicTo(cx + w * 0.26f, cy + h * 0.05f, cx + w * 0.26f, cy + h * 0.2f, cx + w * 0.15f, cy + h * 0.28f)
-                            lineTo(cx - w * 0.15f, cy + h * 0.28f)
-                            cubicTo(cx - w * 0.26f, cy + h * 0.2f, cx - w * 0.26f, cy + h * 0.05f, cx - w * 0.1f, cy)
-                            quadraticTo(cx - w * 0.1f, cy - h * 0.12f, cx - w * 0.15f, cy - h * 0.28f)
-                            close()
-                        }
-                        drawPath(path = jar, color = activeColor)
-                    }
+                    androidx.compose.foundation.Image(
+                        painter = androidx.compose.ui.res.painterResource(id = com.snehil.minori.R.drawable.pottery_class),
+                        contentDescription = "Pottery Class",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                    )
                 }
 
                 // Text Meta
