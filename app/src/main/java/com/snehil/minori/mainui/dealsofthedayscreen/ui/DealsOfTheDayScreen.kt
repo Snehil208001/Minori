@@ -125,7 +125,6 @@ fun DealsOfTheDayScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
                 .padding(paddingValues)
         ) {
             // 1. Top Bar Header
