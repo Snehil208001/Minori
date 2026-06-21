@@ -132,7 +132,12 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 3. All Featured Header & Sort / Filter controls
-            HomeFeaturedHeader(textColor = textColor, isDark = isDark, cardBg = cardBg)
+            HomeFeaturedHeader(
+                textColor = textColor,
+                isDark = isDark,
+                cardBg = cardBg,
+                onViewAllTrending = onViewAllTrending
+            )
 
             SpacerHeight(16)
 
@@ -142,12 +147,12 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 5. Horizontal swipeable Pager Banners
-            HomeBannersPager(isDark = isDark)
+            HomeBannersPager(isDark = isDark, onViewAllTrending = onViewAllTrending)
 
             SpacerHeight(24)
 
             // 6. Deal of the Day timer header & deal cards carousel
-            HomeDealOfTheDay(isDark = isDark, textColor = textColor, cardBg = cardBg)
+            HomeDealOfTheDay(isDark = isDark, textColor = textColor, cardBg = cardBg, onViewAllTrending = onViewAllTrending)
 
             SpacerHeight(24)
 
@@ -157,7 +162,7 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 8. Pottery & Tapestry Promo card ("Flat & Heels" equivalent)
-            HomePotteryPromoCard(isDark = isDark, textColor = textColor)
+            HomePotteryPromoCard(isDark = isDark, textColor = textColor, onViewAllTrending = onViewAllTrending)
 
             SpacerHeight(24)
 
@@ -172,7 +177,7 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 10. New Arrivals / Hot Sale banner
-            HomeHotSaleBanner(isDark = isDark)
+            HomeHotSaleBanner(isDark = isDark, onViewAllTrending = onViewAllTrending)
 
             SpacerHeight(24)
 
@@ -192,6 +197,7 @@ fun HomeTopBar(
     cardBg: Color,
     onNavigateToProfile: () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -202,7 +208,9 @@ fun HomeTopBar(
     ) {
         // Menu Button
         IconButton(
-            onClick = {},
+            onClick = {
+                android.widget.Toast.makeText(context, "Menu opened (coming soon!)", android.widget.Toast.LENGTH_SHORT).show()
+            },
             colors = IconButtonDefaults.iconButtonColors(containerColor = cardBg),
             modifier = Modifier
                 .size(44.dp)
@@ -395,7 +403,12 @@ fun HomeSearchBar(isDark: Boolean, textColor: Color, cardBg: Color) {
 
 // 3. Featured Header Sort & Filter Section
 @Composable
-fun HomeFeaturedHeader(textColor: Color, isDark: Boolean, cardBg: Color) {
+fun HomeFeaturedHeader(
+    textColor: Color,
+    isDark: Boolean,
+    cardBg: Color,
+    onViewAllTrending: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -417,7 +430,7 @@ fun HomeFeaturedHeader(textColor: Color, isDark: Boolean, cardBg: Color) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .background(cardBg)
-                    .clickable {}
+                    .clickable { onViewAllTrending() }
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -445,7 +458,7 @@ fun HomeFeaturedHeader(textColor: Color, isDark: Boolean, cardBg: Color) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .background(cardBg)
-                    .clickable {}
+                    .clickable { onViewAllTrending() }
                     .padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -580,7 +593,7 @@ fun HomeCategoriesRow(textColor: Color, isDark: Boolean, cardBg: Color) {
 
 // 5. Swipeable Horizontal Pager Banners
 @Composable
-fun HomeBannersPager(isDark: Boolean) {
+fun HomeBannersPager(isDark: Boolean, onViewAllTrending: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { 3 })
 
     LaunchedEffect(key1 = true) {
@@ -648,7 +661,7 @@ fun HomeBannersPager(isDark: Boolean) {
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color.White)
-                            .clickable {}
+                            .clickable { onViewAllTrending() }
                             .padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
                         Text(
@@ -701,7 +714,12 @@ fun HomeBannersPager(isDark: Boolean) {
 
 // 6. Deal of the Day timer header & deal cards carousel
 @Composable
-fun HomeDealOfTheDay(isDark: Boolean, textColor: Color, cardBg: Color) {
+fun HomeDealOfTheDay(
+    isDark: Boolean,
+    textColor: Color,
+    cardBg: Color,
+    onViewAllTrending: () -> Unit
+) {
     var totalSecondsRemaining by remember { mutableStateOf(82520) } // Equivalent to 22h 55m 20s
 
     LaunchedEffect(key1 = true) {
@@ -762,7 +780,7 @@ fun HomeDealOfTheDay(isDark: Boolean, textColor: Color, cardBg: Color) {
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
                         .background(Color.White.copy(alpha = 0.2f))
-                        .clickable {}
+                        .clickable { onViewAllTrending() }
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Text(
@@ -979,7 +997,11 @@ fun HomeSpecialOffersCard(isDark: Boolean, cardBg: Color, textColor: Color) {
 
 // 8. Pottery & Macrame Promo Card ("Flat & Heels" equivalent)
 @Composable
-fun HomePotteryPromoCard(isDark: Boolean, textColor: Color) {
+fun HomePotteryPromoCard(
+    isDark: Boolean,
+    textColor: Color,
+    onViewAllTrending: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -1048,7 +1070,7 @@ fun HomePotteryPromoCard(isDark: Boolean, textColor: Color) {
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .background(Terracotta)
-                        .clickable {}
+                        .clickable { onViewAllTrending() }
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(
@@ -1238,7 +1260,7 @@ fun HomeTrendingCard(
 
 // 10. Hot Summer Sale / New Arrivals Banner
 @Composable
-fun HomeHotSaleBanner(isDark: Boolean) {
+fun HomeHotSaleBanner(isDark: Boolean, onViewAllTrending: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -1278,7 +1300,7 @@ fun HomeHotSaleBanner(isDark: Boolean) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0xFFFD5C63))
-                    .clickable {}
+                    .clickable { onViewAllTrending() }
                     .padding(horizontal = 14.dp, vertical = 8.dp)
             ) {
                 Text(
@@ -1410,6 +1432,7 @@ fun MinoriBottomNavigation(
     backgroundColor: Color,
     textColor: Color
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -1479,8 +1502,9 @@ fun MinoriBottomNavigation(
                 .background(if (isDark) Color(0xFF1C1917) else SandCream) // border outline ring
                 .padding(4.dp)
                 .clip(CircleShape)
-                .background(if (isDark) SoftTerracotta else Terracotta)
-                .clickable {},
+                .clickable {
+                    android.widget.Toast.makeText(context, "Cart is empty", android.widget.Toast.LENGTH_SHORT).show()
+                },
             contentAlignment = Alignment.Center
         ) {
             // Custom drawn shopping cart icon on Canvas

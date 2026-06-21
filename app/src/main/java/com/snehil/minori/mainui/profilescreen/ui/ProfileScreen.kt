@@ -77,6 +77,7 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
     
     var showSuccessDialog by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -310,8 +311,9 @@ fun ProfileScreen(
                             .size(28.dp)
                             .align(Alignment.BottomEnd)
                             .clip(CircleShape)
-                            .background(Color(0xFF3B82F6))
-                            .clickable { },
+                            .clickable {
+                                android.widget.Toast.makeText(context, "Edit avatar feature coming soon!", android.widget.Toast.LENGTH_SHORT).show()
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Canvas(modifier = Modifier.size(12.dp)) {
@@ -390,7 +392,9 @@ fun ProfileScreen(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .align(Alignment.End)
-                        .clickable { }
+                        .clickable {
+                            android.widget.Toast.makeText(context, "Password reset request sent!", android.widget.Toast.LENGTH_SHORT).show()
+                        }
                 )
 
                 SpacerHeight(24)

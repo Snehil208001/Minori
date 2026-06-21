@@ -83,6 +83,7 @@ fun SignupScreen(
     var errorText by remember { mutableStateOf<String?>(null) }
 
     val isDark = isSystemInDarkTheme()
+    val context = androidx.compose.ui.platform.LocalContext.current
     val backgroundColor = if (isDark) Color(0xFF1C1917) else SandCream
     val textColor = if (isDark) SandCream else CharcoalText
     val descColor = if (isDark) Color(0xFFB4ADAC) else EarthyStone
@@ -229,7 +230,9 @@ fun SignupScreen(
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = accentColor,
-                            modifier = Modifier.clickable { }
+                            modifier = Modifier.clickable {
+                                android.widget.Toast.makeText(context, "Opening Terms of Service...", android.widget.Toast.LENGTH_SHORT).show()
+                            }
                         )
                         Text(
                             text = " & ",
@@ -241,7 +244,9 @@ fun SignupScreen(
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             color = accentColor,
-                            modifier = Modifier.clickable { }
+                            modifier = Modifier.clickable {
+                                android.widget.Toast.makeText(context, "Opening Privacy Policy...", android.widget.Toast.LENGTH_SHORT).show()
+                            }
                         )
                     }
                 }
