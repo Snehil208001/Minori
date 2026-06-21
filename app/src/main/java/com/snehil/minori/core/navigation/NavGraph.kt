@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.snehil.minori.mainui.authentication.forgetpasswordscreen.ui.ForgotPasswordScreen
 import com.snehil.minori.mainui.authentication.loginscreen.ui.LoginScreen
 import com.snehil.minori.mainui.authentication.signupscreen.ui.SignupScreen
+import com.snehil.minori.mainui.dealsofthedayscreen.ui.DealsOfTheDayScreen
 import com.snehil.minori.mainui.homescreen.ui.HomeScreen
 import com.snehil.minori.mainui.onboardingscreen.ui.OnboardingScreen
 import com.snehil.minori.mainui.profilescreen.ui.ProfileScreen
@@ -82,6 +83,9 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onViewAllTrending = {
                     navController.navigate(Screen.TrendingProduct.route)
+                },
+                onViewAllDeals = {
+                    navController.navigate(Screen.DealsOfTheDay.route)
                 }
             )
         }
@@ -94,6 +98,16 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(route = Screen.TrendingProduct.route) {
             TrendingProductScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
+        composable(route = Screen.DealsOfTheDay.route) {
+            DealsOfTheDayScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },

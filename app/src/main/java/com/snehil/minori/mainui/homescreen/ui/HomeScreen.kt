@@ -77,7 +77,8 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToProfile: () -> Unit,
-    onViewAllTrending: () -> Unit
+    onViewAllTrending: () -> Unit,
+    onViewAllDeals: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -152,7 +153,7 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 6. Deal of the Day timer header & deal cards carousel
-            HomeDealOfTheDay(isDark = isDark, textColor = textColor, cardBg = cardBg, onViewAllTrending = onViewAllTrending)
+            HomeDealOfTheDay(isDark = isDark, textColor = textColor, cardBg = cardBg, onViewAllDeals = onViewAllDeals)
 
             SpacerHeight(24)
 
@@ -718,7 +719,7 @@ fun HomeDealOfTheDay(
     isDark: Boolean,
     textColor: Color,
     cardBg: Color,
-    onViewAllTrending: () -> Unit
+    onViewAllDeals: () -> Unit
 ) {
     var totalSecondsRemaining by remember { mutableStateOf(82520) } // Equivalent to 22h 55m 20s
 
@@ -780,7 +781,7 @@ fun HomeDealOfTheDay(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
                         .background(Color.White.copy(alpha = 0.2f))
-                        .clickable { onViewAllTrending() }
+                        .clickable { onViewAllDeals() }
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Text(
