@@ -1541,6 +1541,7 @@ fun MinoriBottomNavigation(
                 .background(if (isDark) Color(0xFF1C1917) else SandCream) // border outline ring
                 .padding(4.dp)
                 .clip(CircleShape)
+                .background(if (isDark) SoftTerracotta else Terracotta) // Solid brand color background
                 .clickable {
                     android.widget.Toast.makeText(context, "Cart is empty", android.widget.Toast.LENGTH_SHORT).show()
                 },
