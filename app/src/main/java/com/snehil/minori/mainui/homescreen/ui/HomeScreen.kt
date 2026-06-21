@@ -76,7 +76,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onViewAllTrending: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -161,7 +162,12 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 9. Trending Products section
-            HomeTrendingProducts(isDark = isDark, textColor = textColor, cardBg = cardBg)
+            HomeTrendingProducts(
+                isDark = isDark,
+                textColor = textColor,
+                cardBg = cardBg,
+                onViewAllTrending = onViewAllTrending
+            )
 
             SpacerHeight(24)
 
@@ -1059,7 +1065,12 @@ fun HomePotteryPromoCard(isDark: Boolean, textColor: Color) {
 
 // 9. Trending Products horizontal row
 @Composable
-fun HomeTrendingProducts(isDark: Boolean, textColor: Color, cardBg: Color) {
+fun HomeTrendingProducts(
+    isDark: Boolean,
+    textColor: Color,
+    cardBg: Color,
+    onViewAllTrending: () -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         // Red Section Header
         Box(
@@ -1094,7 +1105,7 @@ fun HomeTrendingProducts(isDark: Boolean, textColor: Color, cardBg: Color) {
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
                         .background(Color.White.copy(alpha = 0.2f))
-                        .clickable {}
+                        .clickable { onViewAllTrending() }
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Text(

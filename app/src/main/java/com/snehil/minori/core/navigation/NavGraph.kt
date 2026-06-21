@@ -11,6 +11,7 @@ import com.snehil.minori.mainui.homescreen.ui.HomeScreen
 import com.snehil.minori.mainui.onboardingscreen.ui.OnboardingScreen
 import com.snehil.minori.mainui.profilescreen.ui.ProfileScreen
 import com.snehil.minori.mainui.splashscreen.ui.SplashScreen
+import com.snehil.minori.mainui.trendingproductscreen.ui.TrendingProductScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -78,6 +79,9 @@ fun NavGraph(navController: NavHostController) {
             HomeScreen(
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
+                },
+                onViewAllTrending = {
+                    navController.navigate(Screen.TrendingProduct.route)
                 }
             )
         }
@@ -85,6 +89,16 @@ fun NavGraph(navController: NavHostController) {
             ProfileScreen(
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+        composable(route = Screen.TrendingProduct.route) {
+            TrendingProductScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
                 }
             )
         }
