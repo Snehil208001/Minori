@@ -17,6 +17,8 @@ import com.snehil.minori.mainui.artisanspotlightscreen.ui.ArtisanSpotlightScreen
 import com.snehil.minori.mainui.newinstorescreen.ui.NewInStoreScreen
 import com.snehil.minori.mainui.potterypromoscreen.ui.PotteryPromoScreen
 import com.snehil.minori.mainui.newarrivalsscreen.ui.NewArrivalsScreen
+import com.snehil.minori.mainui.specialoffersscreen.ui.SpecialOffersScreen
+
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -102,6 +104,9 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onViewNewArrivals = {
                     navController.navigate(Screen.NewArrivals.route)
+                },
+                onViewSpecialOffers = {
+                    navController.navigate(Screen.SpecialOffers.route)
                 }
             )
         }
@@ -164,6 +169,16 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(route = Screen.NewArrivals.route) {
             NewArrivalsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
+        composable(route = Screen.SpecialOffers.route) {
+            SpecialOffersScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 },

@@ -82,7 +82,8 @@ fun HomeScreen(
     onViewArtisanSpotlight: () -> Unit,
     onViewNewInStore: () -> Unit,
     onViewPotteryPromo: () -> Unit,
-    onViewNewArrivals: () -> Unit
+    onViewNewArrivals: () -> Unit,
+    onViewSpecialOffers: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -167,7 +168,12 @@ fun HomeScreen(
             SpacerHeight(24)
 
             // 7. Special Offers card
-            HomeSpecialOffersCard(isDark = isDark, cardBg = cardBg, textColor = textColor)
+            HomeSpecialOffersCard(
+                isDark = isDark,
+                cardBg = cardBg,
+                textColor = textColor,
+                onViewSpecialOffers = onViewSpecialOffers
+            )
 
             SpacerHeight(24)
 
@@ -963,11 +969,17 @@ fun HomeDealCard(
 
 // 7. Special Offers Card Component
 @Composable
-fun HomeSpecialOffersCard(isDark: Boolean, cardBg: Color, textColor: Color) {
+fun HomeSpecialOffersCard(
+    isDark: Boolean,
+    cardBg: Color,
+    textColor: Color,
+    onViewSpecialOffers: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp)
+            .clickable { onViewSpecialOffers() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
