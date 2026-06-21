@@ -1,12 +1,5 @@
 package com.snehil.minori.mainui.homescreen.ui
 
-import androidx.compose.runtime.collectAsState
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.snehil.minori.mainui.homescreen.viewmodel.HomeViewModel
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.repeatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,8 +31,6 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -52,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -68,11 +59,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.snehil.minori.mainui.authentication.SpacerHeight
 import com.snehil.minori.mainui.authentication.SpacerWidth
+import com.snehil.minori.mainui.homescreen.viewmodel.HomeViewModel
 import com.snehil.minori.ui.theme.CharcoalText
 import com.snehil.minori.ui.theme.EarthyClay
 import com.snehil.minori.ui.theme.EarthyStone
@@ -83,7 +75,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onNavigateToProfile: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -99,7 +92,12 @@ fun HomeScreen(
         bottomBar = {
             MinoriBottomNavigation(
                 selectedTab = selectedNavTab,
-                onTabSelected = { selectedNavTab = it },
+                onTabSelected = {
+                    selectedNavTab = it
+                    if (it == 3) {
+                        onNavigateToProfile()
+                    }
+                },
                 isDark = isDark,
                 backgroundColor = cardBg,
                 textColor = textColor
@@ -118,7 +116,12 @@ fun HomeScreen(
             SpacerHeight(8)
             
             // 1. Top Bar Section
-            HomeTopBar(isDark = isDark, textColor = textColor, cardBg = cardBg)
+            HomeTopBar(
+                isDark = isDark,
+                textColor = textColor,
+                cardBg = cardBg,
+                onNavigateToProfile = onNavigateToProfile
+            )
 
             SpacerHeight(16)
 
@@ -177,7 +180,12 @@ fun HomeScreen(
 
 // 1. Top Bar Component
 @Composable
-fun HomeTopBar(isDark: Boolean, textColor: Color, cardBg: Color) {
+fun HomeTopBar(
+    isDark: Boolean,
+    textColor: Color,
+    cardBg: Color,
+    onNavigateToProfile: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -219,7 +227,8 @@ fun HomeTopBar(isDark: Boolean, textColor: Color, cardBg: Color) {
             modifier = Modifier
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(if (isDark) Color(0xFF44403C) else Color(0xFFFEE2E2)),
+                .background(if (isDark) Color(0xFF44403C) else Color(0xFFFEE2E2))
+                .clickable { onNavigateToProfile() },
             contentAlignment = Alignment.Center
         ) {
             Canvas(modifier = Modifier.size(24.dp)) {

@@ -9,6 +9,7 @@ import com.snehil.minori.mainui.authentication.loginscreen.ui.LoginScreen
 import com.snehil.minori.mainui.authentication.signupscreen.ui.SignupScreen
 import com.snehil.minori.mainui.homescreen.ui.HomeScreen
 import com.snehil.minori.mainui.onboardingscreen.ui.OnboardingScreen
+import com.snehil.minori.mainui.profilescreen.ui.ProfileScreen
 import com.snehil.minori.mainui.splashscreen.ui.SplashScreen
 
 @Composable
@@ -74,7 +75,18 @@ fun NavGraph(navController: NavHostController) {
             )
         }
         composable(route = Screen.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                }
+            )
+        }
+        composable(route = Screen.Profile.route) {
+            ProfileScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
