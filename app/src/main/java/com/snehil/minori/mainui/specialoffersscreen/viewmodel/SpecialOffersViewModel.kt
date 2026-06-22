@@ -5,6 +5,9 @@ import com.snehil.minori.core.base.BaseViewModel
 import com.snehil.minori.mainui.specialoffersscreen.model.OfferProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import com.snehil.minori.core.wishlist.toWishlistItem
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 
 data class SpecialOffersState(
     val searchQuery: String = "",
@@ -21,7 +24,9 @@ sealed class SpecialOffersEffect {
 }
 
 @HiltViewModel
-class SpecialOffersViewModel @Inject constructor() : BaseViewModel<SpecialOffersState, SpecialOffersEffect>() {
+class SpecialOffersViewModel @Inject constructor(
+    private val wishlistManager: com.snehil.minori.core.wishlist.WishlistManager
+) : BaseViewModel<SpecialOffersState, SpecialOffersEffect>() {
 
     private val allProducts = listOf(
         OfferProduct(
@@ -113,6 +118,12 @@ class SpecialOffersViewModel @Inject constructor() : BaseViewModel<SpecialOffers
     override val initialState: SpecialOffersState = SpecialOffersState(products = allProducts)
 
     init {
+        viewModelScope.launch {
+            wishlistManager.wishlistFlow.collect { items ->
+                val wishlisted = items.filter { it.type == "OfferProduct" }.map { it.id.toInt() }.toSet()
+                updateState { it.copy(wishlistedIds = wishlisted) }
+            }
+        }
         filterAndSortProducts()
     }
 
@@ -132,15 +143,8 @@ class SpecialOffersViewModel @Inject constructor() : BaseViewModel<SpecialOffers
     }
 
     fun toggleWishlist(productId: Int) {
-        updateState { state ->
-            val updated = state.wishlistedIds.toMutableSet()
-            if (updated.contains(productId)) {
-                updated.remove(productId)
-            } else {
-                updated.add(productId)
-            }
-            state.copy(wishlistedIds = updated)
-        }
+        val product = allProducts.find { it.id == productId } ?: return
+        wishlistManager.toggleWishlist(product.toWishlistItem())
     }
 
     fun goBack() {

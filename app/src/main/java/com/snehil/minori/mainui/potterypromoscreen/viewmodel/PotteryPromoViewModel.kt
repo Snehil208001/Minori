@@ -5,6 +5,9 @@ import com.snehil.minori.core.base.BaseViewModel
 import com.snehil.minori.mainui.potterypromoscreen.model.PotteryProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import androidx.lifecycle.viewModelScope
+import com.snehil.minori.core.wishlist.toWishlistItem
+import kotlinx.coroutines.launch
 
 data class PotteryPromoState(
     val searchQuery: String = "",
@@ -21,7 +24,9 @@ sealed class PotteryPromoEffect {
 }
 
 @HiltViewModel
-class PotteryPromoViewModel @Inject constructor() : BaseViewModel<PotteryPromoState, PotteryPromoEffect>() {
+class PotteryPromoViewModel @Inject constructor(
+    private val wishlistManager: com.snehil.minori.core.wishlist.WishlistManager
+) : BaseViewModel<PotteryPromoState, PotteryPromoEffect>() {
 
     private val allProducts = listOf(
         PotteryProduct(1, "Pottery Wheel Workshop", "A 2-hour guided session on the spinning potter's wheel. Clay and tools provided.", 1800, 2400, "25% OFF", 5.0f, 142, R.drawable.pottery_spinning, "Classes", "Beginner Friendly"),
@@ -35,6 +40,12 @@ class PotteryPromoViewModel @Inject constructor() : BaseViewModel<PotteryPromoSt
     override val initialState: PotteryPromoState = PotteryPromoState(products = allProducts)
 
     init {
+        viewModelScope.launch {
+            wishlistManager.wishlistFlow.collect { items ->
+                val wishlisted = items.filter { it.type == "PotteryProduct" }.map { it.id.toInt() }.toSet()
+                updateState { it.copy(wishlistedIds = wishlisted) }
+            }
+        }
         filterAndSortProducts()
     }
 
@@ -54,15 +65,8 @@ class PotteryPromoViewModel @Inject constructor() : BaseViewModel<PotteryPromoSt
     }
 
     fun toggleWishlist(productId: Int) {
-        updateState { state ->
-            val updated = state.wishlistedIds.toMutableSet()
-            if (updated.contains(productId)) {
-                updated.remove(productId)
-            } else {
-                updated.add(productId)
-            }
-            state.copy(wishlistedIds = updated)
-        }
+        val product = allProducts.find { it.id == productId } ?: return
+        wishlistManager.toggleWishlist(product.toWishlistItem())
     }
 
     fun goBack() {

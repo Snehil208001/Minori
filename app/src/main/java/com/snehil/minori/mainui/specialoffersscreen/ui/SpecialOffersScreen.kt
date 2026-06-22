@@ -79,8 +79,12 @@ import com.snehil.minori.ui.theme.SandCream
 
 @Composable
 fun SpecialOffersScreen(
+    onViewCart: () -> Unit,
+
     onNavigateBack: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    onViewWishlist: () -> Unit,
+    onProductClick: (String, String) -> Unit,
     viewModel: SpecialOffersViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -106,10 +110,13 @@ fun SpecialOffersScreen(
     Scaffold(
         bottomBar = {
             MinoriBottomNavigation(
+                onCartClick = onViewCart,
+
                 selectedTab = 0,
                 onTabSelected = { index ->
                     when (index) {
                         0 -> viewModel.goBack()
+                        1 -> onViewWishlist()
                         3 -> onNavigateToProfile()
                     }
                 },
@@ -356,7 +363,8 @@ fun SpecialOffersScreen(
                             cardBg = cardBg,
                             textColor = textColor,
                             descColor = descColor,
-                            accentColor = accentColor
+                            accentColor = accentColor,
+                            onProductClick = onProductClick
                         )
                     }
                 }
@@ -443,12 +451,13 @@ fun OfferGridCard(
     cardBg: Color,
     textColor: Color,
     descColor: Color,
-    accentColor: Color
+    accentColor: Color,
+    onProductClick: (String, String) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onProductClick(product.id.toString(), "OfferProduct") },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {

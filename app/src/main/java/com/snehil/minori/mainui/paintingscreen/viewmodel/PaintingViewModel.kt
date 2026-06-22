@@ -1,48 +1,46 @@
-package com.snehil.minori.mainui.newarrivalsscreen.viewmodel
+package com.snehil.minori.mainui.paintingscreen.viewmodel
 
 import com.snehil.minori.R
 import com.snehil.minori.core.base.BaseViewModel
-import com.snehil.minori.mainui.newarrivalsscreen.model.ArrivalProduct
+import com.snehil.minori.mainui.paintingscreen.model.PaintingProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.snehil.minori.core.wishlist.toWishlistItem
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
 
-data class NewArrivalsState(
+data class PaintingState(
     val searchQuery: String = "",
     val selectedCategory: String = "All",
     val selectedSort: String = "Popularity",
-    val products: List<ArrivalProduct> = emptyList(),
+    val products: List<PaintingProduct> = emptyList(),
     val wishlistedIds: Set<Int> = emptySet(),
-    val categories: List<String> = listOf("All", "Bags", "Home"),
+    val categories: List<String> = listOf("All", "Oil", "Acrylic", "Watercolor", "Gouache"),
     val sortOptions: List<String> = listOf("Popularity", "Price: Low to High", "Price: High to Low")
 )
 
-sealed class NewArrivalsEffect {
-    object NavigateBack : NewArrivalsEffect()
+sealed class PaintingEffect {
+    object NavigateBack : PaintingEffect()
 }
 
 @HiltViewModel
-class NewArrivalsViewModel @Inject constructor(
+class PaintingViewModel @Inject constructor(
     private val wishlistManager: com.snehil.minori.core.wishlist.WishlistManager
-) : BaseViewModel<NewArrivalsState, NewArrivalsEffect>() {
+) : BaseViewModel<PaintingState, PaintingEffect>() {
 
     private val allProducts = listOf(
-        ArrivalProduct(1, "Organic Linen Tote", "Spacious summer tote bag with braided handles and hand-frayed fringe detailing.", 1450, 2000, "27% OFF", 4.8f, 34, R.drawable.linen_tote, "Bags", "100% Organic Linen"),
-        ArrivalProduct(2, "Rustic Linen Pillow", "Heavy-texture cream linen throw pillow cover with organic flax fibers.", 1200, 1600, "25% OFF", 4.6f, 27, R.drawable.linen_pillow, "Home", "100% Organic Linen"),
-        ArrivalProduct(3, "Hand-Braided Jute Rug", "Earthy natural round braided jute fiber rug for entryways.", 3200, 4000, "20% OFF", 4.7f, 18, R.drawable.wool_rug, "Home", "Natural Jute Fiber"),
-        ArrivalProduct(4, "Seagrass Market Basket", "Handwoven sturdy market carrier bag with brown leather handles.", 1800, 2400, "25% OFF", 4.8f, 52, R.drawable.woven_basket, "Bags", "Seagrass & Leather"),
-        ArrivalProduct(5, "Fringe Cotton Hanger", "Bohemian hand-knotted cotton rope hanger for plant pots.", 650, 900, "27% OFF", 4.5f, 67, R.drawable.macrame_hanger, "Home", "Organic Cotton Rope"),
-        ArrivalProduct(6, "Abstract Canvas Hanging", "Minimalist abstract screen-printed linen wall banner tapestry.", 2200, 3000, "26% OFF", 4.7f, 14, R.drawable.tapestry_wall, "Home", "Handwoven Cotton Linen")
+        PaintingProduct(1, "Coastal Mist Oil", "Impressionist coastal scene painted with thick palette knife strokes on stretched canvas.", 14500, 18000, "19% OFF", 4.9f, 21, R.drawable.artisan_weaving, "Oil", "24x36 in", true),
+        PaintingProduct(2, "Crimson Sunrise", "Vibrant wet-on-wet watercolor study capturing dawn over misty hills.", 3500, 4500, "22% OFF", 4.7f, 15, R.drawable.tapestry_wall, "Watercolor", "12x16 in", false),
+        PaintingProduct(3, "Abstract Calm", "Minimalist abstract canvas featuring gentle earth tones and textured plaster lines.", 9500, 12000, "20% OFF", 4.8f, 34, R.drawable.glass_carafe, "Acrylic", "30x30 in", true),
+        PaintingProduct(4, "Forest Path Gouache", "Intimate botanical Gouache painting on heavy cotton paper, detailing forest light.", 2200, 3000, "26% OFF", 4.6f, 12, R.drawable.boho_candle, "Gouache", "10x14 in", false)
     )
 
-    override val initialState: NewArrivalsState = NewArrivalsState(products = allProducts)
+    override val initialState: PaintingState = PaintingState(products = allProducts)
 
     init {
         viewModelScope.launch {
             wishlistManager.wishlistFlow.collect { items ->
-                val wishlisted = items.filter { it.type == "ArrivalProduct" }.map { it.id.toInt() }.toSet()
+                val wishlisted = items.filter { it.type == "Painting" }.map { it.id.toInt() }.toSet()
                 updateState { it.copy(wishlistedIds = wishlisted) }
             }
         }
@@ -70,7 +68,7 @@ class NewArrivalsViewModel @Inject constructor(
     }
 
     fun goBack() {
-        emitEffect(NewArrivalsEffect.NavigateBack)
+        emitEffect(PaintingEffect.NavigateBack)
     }
 
     private fun filterAndSortProducts() {
@@ -81,14 +79,14 @@ class NewArrivalsViewModel @Inject constructor(
         var result = allProducts
 
         if (category != "All") {
-            result = result.filter { it.category == category }
+            result = result.filter { it.medium == category }
         }
 
         if (query.isNotEmpty()) {
             result = result.filter {
                 it.title.lowercase().contains(query) ||
                 it.description.lowercase().contains(query) ||
-                it.materialUsed.lowercase().contains(query)
+                it.medium.lowercase().contains(query)
             }
         }
 

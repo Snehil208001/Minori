@@ -77,8 +77,12 @@ import com.snehil.minori.ui.theme.SageGreen
 
 @Composable
 fun ArtisanSpotlightScreen(
+    onViewCart: () -> Unit,
+
     onNavigateBack: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    onViewWishlist: () -> Unit,
+    onProductClick: (String, String) -> Unit,
     viewModel: ArtisanSpotlightViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -104,10 +108,13 @@ fun ArtisanSpotlightScreen(
     Scaffold(
         bottomBar = {
             MinoriBottomNavigation(
+                onCartClick = onViewCart,
+
                 selectedTab = 0,
                 onTabSelected = { index ->
                     when (index) {
                         0 -> viewModel.goBack()
+                        1 -> onViewWishlist()
                         3 -> onNavigateToProfile()
                     }
                 },
@@ -354,7 +361,8 @@ fun ArtisanSpotlightScreen(
                             cardBg = cardBg,
                             textColor = textColor,
                             descColor = descColor,
-                            accentColor = accentColor
+                            accentColor = accentColor,
+                            onProductClick = onProductClick
                         )
                     }
                 }
@@ -410,12 +418,13 @@ fun ArtisanGridCard(
     cardBg: Color,
     textColor: Color,
     descColor: Color,
-    accentColor: Color
+    accentColor: Color,
+    onProductClick: (String, String) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onProductClick(product.id.toString(), "ArtisanProduct") },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {

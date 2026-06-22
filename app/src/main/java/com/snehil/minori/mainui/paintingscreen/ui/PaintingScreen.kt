@@ -1,4 +1,4 @@
-package com.snehil.minori.mainui.newarrivalsscreen.ui
+package com.snehil.minori.mainui.paintingscreen.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -63,40 +61,40 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.snehil.minori.mainui.authentication.SpacerHeight
 import com.snehil.minori.mainui.authentication.SpacerWidth
-import com.snehil.minori.mainui.newarrivalsscreen.model.ArrivalProduct
-import com.snehil.minori.mainui.newarrivalsscreen.viewmodel.NewArrivalsEffect
-import com.snehil.minori.mainui.newarrivalsscreen.viewmodel.NewArrivalsViewModel
+import com.snehil.minori.mainui.paintingscreen.model.PaintingProduct
+import com.snehil.minori.mainui.paintingscreen.viewmodel.PaintingEffect
+import com.snehil.minori.mainui.paintingscreen.viewmodel.PaintingViewModel
 import com.snehil.minori.mainui.homescreen.ui.MinoriBottomNavigation
 import com.snehil.minori.ui.theme.CharcoalText
 import com.snehil.minori.ui.theme.EarthyStone
 import com.snehil.minori.ui.theme.SandCream
 
 @Composable
-fun NewArrivalsScreen(
+fun PaintingScreen(
     onViewCart: () -> Unit,
 
     onNavigateBack: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onViewWishlist: () -> Unit,
     onProductClick: (String, String) -> Unit,
-    viewModel: NewArrivalsViewModel = hiltViewModel()
+    viewModel: PaintingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(key1 = true) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                NewArrivalsEffect.NavigateBack -> onNavigateBack()
+                PaintingEffect.NavigateBack -> onNavigateBack()
             }
         }
     }
 
     val isDark = isSystemInDarkTheme()
-    val backgroundColor = if (isDark) Color(0xFF261A18) else Color(0xFFFFF6F5) // Soft blush terracotta background
+    val backgroundColor = if (isDark) Color(0xFF0F172A) else Color(0xFFF8FAFC) // Slate Blue/Gray
     val textColor = if (isDark) SandCream else CharcoalText
-    val descColor = if (isDark) Color(0xFFD9CDCB) else EarthyStone
-    val accentColor = if (isDark) Color(0xFFFCA5A5) else Color(0xFFF87171) // Soft terracotta accent
-    val cardBg = if (isDark) Color(0xFF352421) else Color.White
+    val descColor = if (isDark) Color(0xFF94A3B8) else EarthyStone
+    val accentColor = if (isDark) Color(0xFF60A5FA) else Color(0xFF2563EB) // Indigo Blue
+    val cardBg = if (isDark) Color(0xFF1E293B) else Color.White
 
     var sortExpanded by remember { mutableStateOf(false) }
     var filterExpanded by remember { mutableStateOf(false) }
@@ -126,7 +124,7 @@ fun NewArrivalsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 1. Header
+            // Header Top Bar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -162,7 +160,7 @@ fun NewArrivalsScreen(
                 SpacerWidth(16)
 
                 Text(
-                    text = "New Arrivals",
+                    text = "Original Paintings",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
@@ -170,7 +168,7 @@ fun NewArrivalsScreen(
                 )
             }
 
-            // 2. Search Box
+            // Search Bar
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.updateSearchQuery(it) },
@@ -180,8 +178,8 @@ fun NewArrivalsScreen(
                     .height(54.dp),
                 placeholder = {
                     Text(
-                        text = "Search summer organic linen...",
-                        color = if (isDark) Color(0xFF9C8885) else Color(0xFF9CA3AF),
+                        text = "Search canvas oils, acrylics...",
+                        color = if (isDark) Color(0xFF64748B) else Color(0xFF9CA3AF),
                         fontSize = 14.sp
                     )
                 },
@@ -189,7 +187,7 @@ fun NewArrivalsScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = if (isDark) Color(0xFFD9CDCB) else Color(0xFF6B7280),
+                        tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF6B7280),
                         modifier = Modifier.size(20.dp)
                     )
                 },
@@ -201,12 +199,12 @@ fun NewArrivalsScreen(
                     focusedContainerColor = cardBg,
                     unfocusedContainerColor = cardBg,
                     focusedBorderColor = accentColor,
-                    unfocusedBorderColor = if (isDark) Color(0xFF513834) else Color(0xFFE5E7EB),
+                    unfocusedBorderColor = if (isDark) Color(0xFF334155) else Color(0xFFE5E7EB),
                     cursorColor = accentColor
                 )
             )
 
-            // 3. Sort & Filter Row
+            // Sort & Filter Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -215,14 +213,14 @@ fun NewArrivalsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${uiState.products.size} Summer Arrivals",
+                    text = "${uiState.products.size} Masterpieces",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = textColor
                 )
 
                 Row {
-                    // Sort Box
+                    // Sort Menu
                     Box {
                         Row(
                             modifier = Modifier
@@ -270,7 +268,7 @@ fun NewArrivalsScreen(
 
                     SpacerWidth(8)
 
-                    // Filter Box
+                    // Filter Menu
                     Box {
                         Row(
                             modifier = Modifier
@@ -281,7 +279,7 @@ fun NewArrivalsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Category: ${uiState.selectedCategory}",
+                                text = "Medium: ${uiState.selectedCategory}",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textColor
@@ -320,7 +318,7 @@ fun NewArrivalsScreen(
 
             SpacerHeight(4)
 
-            // 4. Products Curated List (Vertical layout of full-width rows)
+            // Paintings list
             if (uiState.products.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -329,7 +327,7 @@ fun NewArrivalsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No organic linen arrivals found.",
+                        text = "No paintings found matching filters.",
                         color = descColor,
                         fontSize = 14.sp
                     )
@@ -342,13 +340,35 @@ fun NewArrivalsScreen(
                         .fillMaxSize()
                         .weight(1f)
                 ) {
-                    // Curved collection intro
                     item {
-                        LinenCollectionIntro(isDark = isDark, accentColor = accentColor)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(if (isDark) Color(0xFF1E293B) else Color(0xFFEFF6FF))
+                                .padding(14.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = "Gallery Archival Standards 🖼️",
+                                    color = accentColor,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Serif
+                                )
+                                SpacerHeight(2)
+                                Text(
+                                    text = "All canvas paintings are varnished against UV fade, ship in heavy crated timber, and come signed on reverse.",
+                                    color = if (isDark) Color(0xFF94A3B8) else CharcoalText,
+                                    fontSize = 11.sp,
+                                    lineHeight = 15.sp
+                                )
+                            }
+                        }
                     }
 
                     items(uiState.products, key = { it.id }) { product ->
-                        CuratedRowCard(
+                        PaintingRowCard(
                             product = product,
                             isWishlisted = uiState.wishlistedIds.contains(product.id),
                             onWishlistToggle = { viewModel.toggleWishlist(product.id) },
@@ -366,36 +386,8 @@ fun NewArrivalsScreen(
 }
 
 @Composable
-fun LinenCollectionIntro(isDark: Boolean, accentColor: Color) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (isDark) Color(0xFF3E2C28) else Color(0xFFFFF1F0))
-            .padding(14.dp)
-    ) {
-        Column {
-            Text(
-                text = "Curated Summer Linen ☀️",
-                color = accentColor,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif
-            )
-            SpacerHeight(2)
-            Text(
-                text = "Explore organic linen fabrics, hand-frayed bags, and lightweight home pillows tailored for premium eco-comfort.",
-                color = if (isDark) Color(0xFFD9CDCB) else CharcoalText,
-                fontSize = 11.sp,
-                lineHeight = 15.sp
-            )
-        }
-    }
-}
-
-@Composable
-fun CuratedRowCard(
-    product: ArrivalProduct,
+fun PaintingRowCard(
+    product: PaintingProduct,
     isWishlisted: Boolean,
     onWishlistToggle: () -> Unit,
     cardBg: Color,
@@ -407,7 +399,7 @@ fun CuratedRowCard(
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        modifier = Modifier.fillMaxWidth().clickable { onProductClick(product.id.toString(), "ArrivalProduct") },
+        modifier = Modifier.fillMaxWidth().clickable { onProductClick(product.id.toString(), "Painting") },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -415,7 +407,6 @@ fun CuratedRowCard(
                 .fillMaxWidth()
                 .height(135.dp)
         ) {
-            // Left Image Block
             Box(
                 modifier = Modifier
                     .width(125.dp)
@@ -428,7 +419,6 @@ fun CuratedRowCard(
                     contentScale = ContentScale.Crop
                 )
 
-                // Discount tag
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopStart)
@@ -446,7 +436,6 @@ fun CuratedRowCard(
                     )
                 }
 
-                // Wishlist Toggle
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -466,7 +455,6 @@ fun CuratedRowCard(
                 }
             }
 
-            // Right Details Block
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -518,21 +506,56 @@ fun CuratedRowCard(
 
                 SpacerHeight(4)
 
-                // Material Label
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = accentColor.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(4.dp)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = accentColor.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = product.medium,
+                            color = accentColor,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = product.materialUsed,
-                        color = accentColor,
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color.Gray.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = product.dimensions,
+                            color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (product.isFramed) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFF10B981).copy(alpha = 0.15f),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "Framed",
+                                color = Color(0xFF10B981),
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
 
                 SpacerHeight(6)
@@ -558,7 +581,6 @@ fun CuratedRowCard(
                         )
                     }
 
-                    // Curated Action Button
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
@@ -568,7 +590,7 @@ fun CuratedRowCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "View",
+                            text = "Bid / Buy",
                             color = Color.White,
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold

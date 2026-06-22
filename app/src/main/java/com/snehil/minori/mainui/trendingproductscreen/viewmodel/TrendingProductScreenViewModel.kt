@@ -5,6 +5,9 @@ import com.snehil.minori.core.base.BaseViewModel
 import com.snehil.minori.mainui.trendingproductscreen.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import com.snehil.minori.core.wishlist.toWishlistItem
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 
 data class TrendingProductState(
     val searchQuery: String = "",
@@ -21,7 +24,9 @@ sealed class TrendingProductEffect {
 }
 
 @HiltViewModel
-class TrendingProductScreenViewModel @Inject constructor() : BaseViewModel<TrendingProductState, TrendingProductEffect>() {
+class TrendingProductScreenViewModel @Inject constructor(
+    private val wishlistManager: com.snehil.minori.core.wishlist.WishlistManager
+) : BaseViewModel<TrendingProductState, TrendingProductEffect>() {
 
     private val allProducts = listOf(
         Product(1, "Earthy Ceramic Bowl", "Hand-thrown clay bowl with natural white glaze.", 1850, 2500, "26% OFF", 4.7f, 154, R.drawable.ceramic_bowl, "Clayware"),
@@ -39,6 +44,12 @@ class TrendingProductScreenViewModel @Inject constructor() : BaseViewModel<Trend
     override val initialState: TrendingProductState = TrendingProductState(products = allProducts)
 
     init {
+        viewModelScope.launch {
+            wishlistManager.wishlistFlow.collect { items ->
+                val wishlisted = items.filter { it.type == "TrendingProduct" }.map { it.id.toInt() }.toSet()
+                updateState { it.copy(wishlistedIds = wishlisted) }
+            }
+        }
         filterAndSortProducts()
     }
 
@@ -58,15 +69,8 @@ class TrendingProductScreenViewModel @Inject constructor() : BaseViewModel<Trend
     }
 
     fun toggleWishlist(productId: Int) {
-        updateState { state ->
-            val updated = state.wishlistedIds.toMutableSet()
-            if (updated.contains(productId)) {
-                updated.remove(productId)
-            } else {
-                updated.add(productId)
-            }
-            state.copy(wishlistedIds = updated)
-        }
+        val product = allProducts.find { it.id == productId } ?: return
+        wishlistManager.toggleWishlist(product.toWishlistItem())
     }
 
     private fun filterAndSortProducts() {

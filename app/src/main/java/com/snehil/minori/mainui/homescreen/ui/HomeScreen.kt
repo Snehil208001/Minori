@@ -2,6 +2,7 @@ package com.snehil.minori.mainui.homescreen.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
@@ -40,6 +42,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -83,10 +88,17 @@ fun HomeScreen(
     onViewNewInStore: () -> Unit,
     onViewPotteryPromo: () -> Unit,
     onViewNewArrivals: () -> Unit,
-    onViewSpecialOffers: () -> Unit
+    onViewSpecialOffers: () -> Unit,
+    onViewCeramics: () -> Unit,
+    onViewPaintings: () -> Unit,
+    onViewFineArts: () -> Unit,
+    onViewWishlist: () -> Unit,
+    onViewCart: () -> Unit,
+    onProductClick: (String, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isFilteringOrSearching = uiState.selectedCategoryId != 0 || uiState.searchQuery.isNotEmpty()
     val isDark = isSystemInDarkTheme()
     val backgroundColor = if (isDark) Color(0xFF1C1917) else SandCream
     val textColor = if (isDark) SandCream else CharcoalText
@@ -101,13 +113,19 @@ fun HomeScreen(
                 selectedTab = selectedNavTab,
                 onTabSelected = {
                     selectedNavTab = it
-                    if (it == 3) {
+                    if (it == 1) {
+                        onViewWishlist()
+                    } else if (it == 3) {
                         onNavigateToProfile()
                     }
                 },
+                onCartClick = onViewCart,
                 isDark = isDark,
                 backgroundColor = cardBg,
-                textColor = textColor
+                textColor = textColor,
+                cartCount = uiState.cartCount,
+                cartTotal = uiState.cartTotal,
+                cartItemsText = uiState.cartItemsText
             )
         },
         containerColor = backgroundColor
@@ -133,74 +151,118 @@ fun HomeScreen(
             SpacerHeight(16)
 
             // 2. Search Field Section
-            HomeSearchBar(isDark = isDark, textColor = textColor, cardBg = cardBg)
+            HomeSearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                isDark = isDark,
+                textColor = textColor,
+                cardBg = cardBg
+            )
 
             SpacerHeight(24)
 
             // 3. All Featured Header & Sort / Filter controls
             HomeFeaturedHeader(
+                selectedSort = uiState.selectedSort,
+                onSortSelected = { viewModel.onSortSelected(it) },
+                selectedCategoryId = uiState.selectedCategoryId,
+                onCategorySelected = { viewModel.onCategorySelected(it) },
                 textColor = textColor,
                 isDark = isDark,
-                cardBg = cardBg,
-                onViewAllTrending = onViewAllTrending
+                cardBg = cardBg
             )
 
             SpacerHeight(16)
 
             // 4. Categories horizontal row with custom drawings
-            HomeCategoriesRow(textColor = textColor, isDark = isDark, cardBg = cardBg)
-
-            SpacerHeight(24)
-
-            // 5. Horizontal swipeable Pager Banners
-            HomeBannersPager(
-                isDark = isDark,
-                onViewAllDeals = onViewAllDeals,
-                onViewArtisanSpotlight = onViewArtisanSpotlight,
-                onViewNewInStore = onViewNewInStore
-            )
-
-            SpacerHeight(24)
-
-            // 6. Deal of the Day timer header & deal cards carousel
-            HomeDealOfTheDay(isDark = isDark, textColor = textColor, cardBg = cardBg, onViewAllDeals = onViewAllDeals)
-
-            SpacerHeight(24)
-
-            // 7. Special Offers card
-            HomeSpecialOffersCard(
-                isDark = isDark,
-                cardBg = cardBg,
+            HomeCategoriesRow(
+                selectedCategoryId = uiState.selectedCategoryId,
+                onCategorySelected = { viewModel.onCategorySelected(it) },
                 textColor = textColor,
-                onViewSpecialOffers = onViewSpecialOffers
-            )
-
-            SpacerHeight(24)
-
-            // 8. Pottery & Tapestry Promo card ("Flat & Heels" equivalent)
-            HomePotteryPromoCard(isDark = isDark, textColor = textColor, onViewPotteryPromo = onViewPotteryPromo)
-
-            SpacerHeight(24)
-
-            // 9. Trending Products section
-            HomeTrendingProducts(
                 isDark = isDark,
-                textColor = textColor,
-                cardBg = cardBg,
-                onViewAllTrending = onViewAllTrending
+                cardBg = cardBg
             )
 
             SpacerHeight(24)
 
-            // 10. New Arrivals / Hot Sale banner
-            HomeHotSaleBanner(isDark = isDark, onViewNewArrivals = onViewNewArrivals)
+            if (isFilteringOrSearching) {
+                HomeFilteredProductsSection(
+                    products = uiState.products,
+                    selectedCategoryId = uiState.selectedCategoryId,
+                    wishlistedIds = uiState.wishlistedIds,
+                    onWishlistToggle = { viewModel.toggleWishlist(it) },
+                    onViewCeramics = onViewCeramics,
+                    onViewPaintings = onViewPaintings,
+                    onViewFineArts = onViewFineArts,
+                    isDark = isDark,
+                    textColor = textColor,
+                    cardBg = cardBg,
+                    onProductClick = onProductClick
+                )
+                SpacerHeight(24)
+            } else {
+                // 5. Horizontal swipeable Pager Banners
+                HomeBannersPager(
+                    isDark = isDark,
+                    onViewAllDeals = onViewAllDeals,
+                    onViewArtisanSpotlight = onViewArtisanSpotlight,
+                    onViewNewInStore = onViewNewInStore
+                )
 
-            SpacerHeight(24)
+                SpacerHeight(24)
 
-            // 11. Sponsored section
-            HomeSponsoredCard(isDark = isDark, cardBg = cardBg, textColor = textColor, onViewPotteryPromo = onViewPotteryPromo)
+                // 6. Deal of the Day timer header & deal cards carousel
+                HomeDealOfTheDay(
+                    isDark = isDark,
+                    textColor = textColor,
+                    cardBg = cardBg,
+                    wishlistedIds = uiState.wishlistedIds,
+                    onWishlistToggle = { viewModel.toggleWishlist(it) },
+                    onViewAllDeals = onViewAllDeals,
+                    onProductClick = onProductClick
+                )
 
-            SpacerHeight(24)
+                SpacerHeight(24)
+
+                // 7. Special Offers card
+                HomeSpecialOffersCard(
+                    isDark = isDark,
+                    cardBg = cardBg,
+                    textColor = textColor,
+                    onViewSpecialOffers = onViewSpecialOffers
+                )
+
+                SpacerHeight(24)
+
+                // 8. Pottery & Tapestry Promo card ("Flat & Heels" equivalent)
+                HomePotteryPromoCard(isDark = isDark, textColor = textColor, onViewPotteryPromo = onViewPotteryPromo)
+
+                SpacerHeight(24)
+
+                // 9. Trending Products section
+                HomeTrendingProducts(
+                    products = uiState.allProducts.take(4),
+                    wishlistedIds = uiState.wishlistedIds,
+                    onWishlistToggle = { viewModel.toggleWishlist(it) },
+                    isDark = isDark,
+                    textColor = textColor,
+                    cardBg = cardBg,
+                    onViewAllTrending = onViewAllTrending,
+                    onProductClick = onProductClick
+                )
+
+                SpacerHeight(24)
+
+                // 10. New Arrivals / Hot Sale banner
+                HomeHotSaleBanner(isDark = isDark, onViewNewArrivals = onViewNewArrivals)
+
+                SpacerHeight(24)
+
+                // 11. Sponsored section
+                HomeSponsoredCard(isDark = isDark, cardBg = cardBg, textColor = textColor, onViewPotteryPromo = onViewPotteryPromo)
+
+                SpacerHeight(24)
+            }
         }
     }
 }
@@ -341,8 +403,13 @@ fun HomeSmallLogo(modifier: Modifier = Modifier) {
 
 // 2. Search Bar Component
 @Composable
-fun HomeSearchBar(isDark: Boolean, textColor: Color, cardBg: Color) {
-    var query by remember { mutableStateOf("") }
+fun HomeSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    isDark: Boolean,
+    textColor: Color,
+    cardBg: Color
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -350,7 +417,7 @@ fun HomeSearchBar(isDark: Boolean, textColor: Color, cardBg: Color) {
     ) {
         OutlinedTextField(
             value = query,
-            onValueChange = { query = it },
+            onValueChange = onQueryChange,
             placeholder = {
                 Text(
                     text = "Search any Product...",
@@ -419,11 +486,26 @@ fun HomeSearchBar(isDark: Boolean, textColor: Color, cardBg: Color) {
 // 3. Featured Header Sort & Filter Section
 @Composable
 fun HomeFeaturedHeader(
+    selectedSort: String,
+    onSortSelected: (String) -> Unit,
+    selectedCategoryId: Int,
+    onCategorySelected: (Int) -> Unit,
     textColor: Color,
     isDark: Boolean,
-    cardBg: Color,
-    onViewAllTrending: () -> Unit
+    cardBg: Color
 ) {
+    var sortExpanded by remember { mutableStateOf(false) }
+    var filterExpanded by remember { mutableStateOf(false) }
+
+    val categoriesList = listOf(
+        CategoryItem(0, "All"),
+        CategoryItem(1, "Ceramics"),
+        CategoryItem(2, "Paintings"),
+        CategoryItem(3, "Fiber Art"),
+        CategoryItem(4, "Woodwork"),
+        CategoryItem(5, "Glassware")
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -441,54 +523,89 @@ fun HomeFeaturedHeader(
 
         Row {
             // Sort Button
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(cardBg)
-                    .clickable { onViewAllTrending() }
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Sort  ", fontSize = 12.sp, color = textColor, fontWeight = FontWeight.SemiBold)
-                // Draw sort icon (two bidirectional arrows)
-                Canvas(modifier = Modifier.size(12.dp)) {
-                    val w = size.width
-                    val h = size.height
-                    val col = textColor
-                    // Left arrow up
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.9f), end = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.1f), strokeWidth = w * 0.14f)
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.05f, h * 0.35f), end = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.1f), strokeWidth = w * 0.14f)
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.45f, h * 0.35f), end = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.1f), strokeWidth = w * 0.14f)
-                    // Right arrow down
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.1f), end = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.9f), strokeWidth = w * 0.14f)
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.55f, h * 0.65f), end = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.9f), strokeWidth = w * 0.14f)
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.95f, h * 0.65f), end = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.9f), strokeWidth = w * 0.14f)
+            Box {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(cardBg)
+                        .clickable { sortExpanded = true }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Sort: $selectedSort  ", fontSize = 12.sp, color = textColor, fontWeight = FontWeight.SemiBold)
+                    // Draw sort icon (two bidirectional arrows)
+                    Canvas(modifier = Modifier.size(12.dp)) {
+                        val w = size.width
+                        val h = size.height
+                        val col = textColor
+                        // Left arrow up
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.9f), end = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.1f), strokeWidth = w * 0.14f)
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.05f, h * 0.35f), end = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.1f), strokeWidth = w * 0.14f)
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.45f, h * 0.35f), end = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.1f), strokeWidth = w * 0.14f)
+                        // Right arrow down
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.1f), end = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.9f), strokeWidth = w * 0.14f)
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.55f, h * 0.65f), end = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.9f), strokeWidth = w * 0.14f)
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.95f, h * 0.65f), end = androidx.compose.ui.geometry.Offset(w * 0.75f, h * 0.9f), strokeWidth = w * 0.14f)
+                    }
+                }
+                DropdownMenu(
+                    expanded = sortExpanded,
+                    onDismissRequest = { sortExpanded = false },
+                    modifier = Modifier.background(cardBg)
+                ) {
+                    listOf("Popularity", "Price: Low to High", "Price: High to Low").forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(text = option, color = textColor, fontSize = 13.sp) },
+                            onClick = {
+                                onSortSelected(option)
+                                sortExpanded = false
+                            }
+                        )
+                    }
                 }
             }
 
             SpacerWidth(10)
 
             // Filter Button
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(cardBg)
-                    .clickable { onViewAllTrending() }
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Filter  ", fontSize = 12.sp, color = textColor, fontWeight = FontWeight.SemiBold)
-                // Draw filter icon (funnel slider lines)
-                Canvas(modifier = Modifier.size(12.dp)) {
-                    val w = size.width
-                    val h = size.height
-                    val col = textColor
-                    // Funnel top line
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(0f, h * 0.2f), end = androidx.compose.ui.geometry.Offset(w, h * 0.2f), strokeWidth = w * 0.14f, cap = StrokeCap.Round)
-                    // Funnel mid line
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.2f, h * 0.55f), end = androidx.compose.ui.geometry.Offset(w * 0.8f, h * 0.55f), strokeWidth = w * 0.14f, cap = StrokeCap.Round)
-                    // Funnel bottom line
-                    drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.4f, h * 0.9f), end = androidx.compose.ui.geometry.Offset(w * 0.6f, h * 0.9f), strokeWidth = w * 0.14f, cap = StrokeCap.Round)
+            Box {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(cardBg)
+                        .clickable { filterExpanded = true }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val activeCategoryName = categoriesList.find { it.id == selectedCategoryId }?.label ?: "All"
+                    Text(text = "Category: $activeCategoryName  ", fontSize = 12.sp, color = textColor, fontWeight = FontWeight.SemiBold)
+                    // Draw filter icon (funnel slider lines)
+                    Canvas(modifier = Modifier.size(12.dp)) {
+                        val w = size.width
+                        val h = size.height
+                        val col = textColor
+                        // Funnel top line
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(0f, h * 0.2f), end = androidx.compose.ui.geometry.Offset(w, h * 0.2f), strokeWidth = w * 0.14f, cap = StrokeCap.Round)
+                        // Funnel mid line
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.2f, h * 0.55f), end = androidx.compose.ui.geometry.Offset(w * 0.8f, h * 0.55f), strokeWidth = w * 0.14f, cap = StrokeCap.Round)
+                        // Funnel bottom line
+                        drawLine(col, start = androidx.compose.ui.geometry.Offset(w * 0.4f, h * 0.9f), end = androidx.compose.ui.geometry.Offset(w * 0.6f, h * 0.9f), strokeWidth = w * 0.14f, cap = StrokeCap.Round)
+                    }
+                }
+                DropdownMenu(
+                    expanded = filterExpanded,
+                    onDismissRequest = { filterExpanded = false },
+                    modifier = Modifier.background(cardBg)
+                ) {
+                    categoriesList.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(text = category.label, color = textColor, fontSize = 13.sp) },
+                            onClick = {
+                                onCategorySelected(category.id)
+                                filterExpanded = false
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -499,9 +616,16 @@ fun HomeFeaturedHeader(
 data class CategoryItem(val id: Int, val label: String)
 
 @Composable
-fun HomeCategoriesRow(textColor: Color, isDark: Boolean, cardBg: Color) {
+fun HomeCategoriesRow(
+    selectedCategoryId: Int,
+    onCategorySelected: (Int) -> Unit,
+    textColor: Color,
+    isDark: Boolean,
+    cardBg: Color
+) {
     val backgroundColor = if (isDark) Color(0xFF1C1917) else SandCream
     val categories = listOf(
+        CategoryItem(0, "All"),
         CategoryItem(1, "Ceramics"),
         CategoryItem(2, "Paintings"),
         CategoryItem(3, "Fiber Art"),
@@ -509,8 +633,6 @@ fun HomeCategoriesRow(textColor: Color, isDark: Boolean, cardBg: Color) {
         CategoryItem(5, "Glassware")
     )
     
-    var selectedCategory by remember { mutableIntStateOf(1) }
-
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
@@ -518,12 +640,12 @@ fun HomeCategoriesRow(textColor: Color, isDark: Boolean, cardBg: Color) {
             .padding(horizontal = 20.dp)
     ) {
         items(categories) { category ->
-            val isSelected = selectedCategory == category.id
+            val isSelected = selectedCategoryId == category.id
             val ringColor = if (isSelected) (if (isDark) SoftTerracotta else Terracotta) else Color.Transparent
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable { selectedCategory = category.id }
+                modifier = Modifier.clickable { onCategorySelected(category.id) }
             ) {
                 // Category circular graphic
                 Box(
@@ -545,6 +667,10 @@ fun HomeCategoriesRow(textColor: Color, isDark: Boolean, cardBg: Color) {
                         val activeColor = if (isDark) SoftTerracotta else Terracotta
 
                         when (category.id) {
+                            0 -> { // All (Abstract Concentric Rings / Focus)
+                                drawCircle(color = activeColor, radius = w * 0.38f, style = Stroke(width = strokeW))
+                                drawCircle(color = activeColor, radius = w * 0.18f)
+                            }
                             1 -> { // Ceramics (Vase)
                                 val path = Path().apply {
                                     moveTo(cx - w * 0.15f, cy - h * 0.3f)
@@ -744,7 +870,10 @@ fun HomeDealOfTheDay(
     isDark: Boolean,
     textColor: Color,
     cardBg: Color,
-    onViewAllDeals: () -> Unit
+    wishlistedIds: Set<String>,
+    onWishlistToggle: (com.snehil.minori.domain.model.Product) -> Unit,
+    onViewAllDeals: () -> Unit,
+    onProductClick: (String, String) -> Unit
 ) {
     var totalSecondsRemaining by remember { mutableStateOf(82520) } // Equivalent to 22h 55m 20s
 
@@ -829,33 +958,61 @@ fun HomeDealOfTheDay(
                 .padding(horizontal = 20.dp)
         ) {
             item {
+                val dealBowlProduct = remember {
+                    com.snehil.minori.domain.model.Product(
+                        id = "deal_bowl",
+                        name = "Earthy Ceramic Bowl",
+                        price = 1500.0,
+                        rating = 4.9f,
+                        categoryId = 1,
+                        description = "Hand-spun clay bowl ideal for organic displays.",
+                        imageUrl = "ceramic_bowl"
+                    )
+                }
                 HomeDealCard(
-                    title = "Earthy Ceramic Bowl",
-                    subtitle = "Hand-spun clay bowl ideal for organic displays.",
+                    title = dealBowlProduct.name,
+                    subtitle = dealBowlProduct.description,
                     price = "₹1,500",
                     originalPrice = "₹2,000",
                     discount = "25% OFF",
-                    rating = "4.9",
+                    rating = dealBowlProduct.rating.toString(),
                     reviews = "3,280",
+                    isWishlisted = wishlistedIds.contains(dealBowlProduct.id),
+                    onWishlistToggle = { onWishlistToggle(dealBowlProduct) },
                     isDark = isDark,
                     cardBg = cardBg,
                     textColor = textColor,
-                    isVase = false
+                    isVase = false,
+                    onProductClick = { onProductClick(dealBowlProduct.id, "Product") }
                 )
             }
             item {
+                val dealPitcherProduct = remember {
+                    com.snehil.minori.domain.model.Product(
+                        id = "deal_pitcher",
+                        name = "Terracotta Pitcher",
+                        price = 2489.0,
+                        rating = 4.8f,
+                        categoryId = 1,
+                        description = "Rustic craft piece with Sage-wash finish.",
+                        imageUrl = "clay_pitcher"
+                    )
+                }
                 HomeDealCard(
-                    title = "Terracotta Pitcher",
-                    subtitle = "Rustic craft piece with Sage-wash finish.",
+                    title = dealPitcherProduct.name,
+                    subtitle = dealPitcherProduct.description,
                     price = "₹2,489",
                     originalPrice = "₹4,000",
                     discount = "37% OFF",
-                    rating = "4.8",
+                    rating = dealPitcherProduct.rating.toString(),
                     reviews = "2,460",
+                    isWishlisted = wishlistedIds.contains(dealPitcherProduct.id),
+                    onWishlistToggle = { onWishlistToggle(dealPitcherProduct) },
                     isDark = isDark,
                     cardBg = cardBg,
                     textColor = textColor,
-                    isVase = true
+                    isVase = true,
+                    onProductClick = { onProductClick(dealPitcherProduct.id, "Product") }
                 )
             }
         }
@@ -871,13 +1028,16 @@ fun HomeDealCard(
     discount: String,
     rating: String,
     reviews: String,
+    isWishlisted: Boolean,
+    onWishlistToggle: () -> Unit,
     isDark: Boolean,
     cardBg: Color,
     textColor: Color,
-    isVase: Boolean
+    isVase: Boolean,
+    onProductClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.width(185.dp),
+        modifier = Modifier.width(185.dp).clickable { onProductClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -898,6 +1058,24 @@ fun HomeDealCard(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.8f))
+                        .clickable { onWishlistToggle() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Wishlist",
+                        tint = if (isWishlisted) Color.Red else Color.Gray,
+                        modifier = Modifier.size(13.dp)
+                    )
+                }
             }
 
             // Product Meta
@@ -1120,10 +1298,14 @@ fun HomePotteryPromoCard(
 // 9. Trending Products horizontal row
 @Composable
 fun HomeTrendingProducts(
+    products: List<com.snehil.minori.domain.model.Product>,
+    wishlistedIds: Set<String>,
+    onWishlistToggle: (com.snehil.minori.domain.model.Product) -> Unit,
     isDark: Boolean,
     textColor: Color,
     cardBg: Color,
-    onViewAllTrending: () -> Unit
+    onViewAllTrending: () -> Unit,
+    onProductClick: (String, String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         // Red Section Header
@@ -1181,30 +1363,15 @@ fun HomeTrendingProducts(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
         ) {
-            item {
+            items(products) { product ->
                 HomeTrendingCard(
-                    title = "Oak Carved Chest",
-                    subtitle = "Handcrafted organic frame drawer with brass keys.",
-                    price = "₹6,850",
-                    originalPrice = "₹9,500",
-                    discount = "28% OFF",
+                    product = product,
+                    isWishlisted = wishlistedIds.contains(product.id),
+                    onWishlistToggle = { onWishlistToggle(product) },
                     isDark = isDark,
                     cardBg = cardBg,
                     textColor = textColor,
-                    isChest = true
-                )
-            }
-            item {
-                HomeTrendingCard(
-                    title = "Glass Vase / Carafe",
-                    subtitle = "Blown decanter in warm amber gradient shade.",
-                    price = "₹2,650",
-                    originalPrice = "₹5,300",
-                    discount = "50% OFF",
-                    isDark = isDark,
-                    cardBg = cardBg,
-                    textColor = textColor,
-                    isChest = false
+                    onProductClick = onProductClick
                 )
             }
         }
@@ -1213,18 +1380,20 @@ fun HomeTrendingProducts(
 
 @Composable
 fun HomeTrendingCard(
-    title: String,
-    subtitle: String,
-    price: String,
-    originalPrice: String,
-    discount: String,
+    product: com.snehil.minori.domain.model.Product,
+    isWishlisted: Boolean,
+    onWishlistToggle: () -> Unit,
     isDark: Boolean,
     cardBg: Color,
     textColor: Color,
-    isChest: Boolean
+    onProductClick: (String, String) -> Unit
 ) {
+    val imgRes = getProductDrawableId(product.imageUrl)
+    val accentColor = if (isDark) SoftTerracotta else Terracotta
+    val descColor = if (isDark) Color(0xFFB4ADAC) else EarthyStone
+
     Card(
-        modifier = Modifier.width(185.dp),
+        modifier = Modifier.width(185.dp).clickable { onProductClick(product.id, "Product") },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -1237,52 +1406,76 @@ fun HomeTrendingCard(
                     .background(if (isDark) Color(0xFF1C1917) else SandCream),
                 contentAlignment = Alignment.Center
             ) {
-                val imgRes = if (isChest) com.snehil.minori.R.drawable.oak_chest else com.snehil.minori.R.drawable.glass_carafe
                 androidx.compose.foundation.Image(
                     painter = androidx.compose.ui.res.painterResource(id = imgRes),
-                    contentDescription = title,
+                    contentDescription = product.name,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.8f))
+                        .clickable { onWishlistToggle() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Wishlist",
+                        tint = if (isWishlisted) Color.Red else Color.Gray,
+                        modifier = Modifier.size(13.dp)
+                    )
+                }
             }
 
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = title,
+                    text = product.name,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
-                    fontFamily = FontFamily.Serif
+                    fontFamily = FontFamily.Serif,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 SpacerHeight(2)
                 Text(
-                    text = subtitle,
+                    text = product.description,
                     fontSize = 11.sp,
-                    color = if (isDark) Color(0xFFB4ADAC) else EarthyStone,
+                    color = descColor,
                     maxLines = 2,
-                    lineHeight = 15.sp
+                    lineHeight = 15.sp,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
                 SpacerHeight(8)
 
                 Text(
-                    text = price,
+                    text = "₹${product.price.toInt()}",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = textColor
+                    color = accentColor
                 )
+
+                SpacerHeight(4)
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    repeat(5) { index ->
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star",
+                            tint = if (index < product.rating.toInt()) Color(0xFFFBBF24) else Color(0xFFE5E7EB),
+                            modifier = Modifier.size(11.dp)
+                        )
+                    }
+                    SpacerWidth(4)
                     Text(
-                        text = originalPrice,
-                        fontSize = 11.sp,
-                        color = if (isDark) Color(0xFF78716C) else Color(0xFF9CA3AF),
-                        textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
-                    )
-                    SpacerWidth(6)
-                    Text(
-                        text = discount,
+                        text = "(${product.rating})",
                         fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isDark) SoftTerracotta else Terracotta
+                        color = if (isDark) Color(0xFF78716C) else Color(0xFF9CA3AF)
                     )
                 }
             }
@@ -1466,9 +1659,13 @@ fun HomeSponsoredCard(
 fun MinoriBottomNavigation(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
+    onCartClick: () -> Unit,
     isDark: Boolean,
     backgroundColor: Color,
-    textColor: Color
+    textColor: Color,
+    cartCount: Int = 0,
+    cartTotal: Double = 0.0,
+    cartItemsText: String = ""
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     Box(
@@ -1542,29 +1739,59 @@ fun MinoriBottomNavigation(
                 .clip(CircleShape)
                 .background(if (isDark) SoftTerracotta else Terracotta) // Solid brand color background
                 .clickable {
-                    android.widget.Toast.makeText(context, "Cart is empty", android.widget.Toast.LENGTH_SHORT).show()
+                    onCartClick()
                 },
             contentAlignment = Alignment.Center
         ) {
             // Custom drawn shopping cart icon on Canvas
-            Canvas(modifier = Modifier.size(24.dp)) {
-                val w = size.width
-                val h = size.height
-                val col = if (isDark) CharcoalText else Color.White
-                val strokeW = w * 0.08f
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Canvas(modifier = Modifier.size(24.dp)) {
+                    val w = size.width
+                    val h = size.height
+                    val col = if (isDark) CharcoalText else Color.White
+                    val strokeW = w * 0.08f
 
-                val cartPath = Path().apply {
-                    moveTo(w * 0.1f, h * 0.15f)
-                    lineTo(w * 0.28f, h * 0.15f)
-                    lineTo(w * 0.42f, h * 0.62f)
-                    lineTo(w * 0.85f, h * 0.62f)
-                    lineTo(w * 0.95f, h * 0.28f)
-                    lineTo(w * 0.32f, h * 0.28f)
+                    val cartPath = Path().apply {
+                        moveTo(w * 0.1f, h * 0.15f)
+                        lineTo(w * 0.28f, h * 0.15f)
+                        lineTo(w * 0.42f, h * 0.62f)
+                        lineTo(w * 0.85f, h * 0.62f)
+                        lineTo(w * 0.95f, h * 0.28f)
+                        lineTo(w * 0.32f, h * 0.28f)
+                    }
+                    drawPath(path = cartPath, color = col, style = Stroke(width = strokeW, cap = StrokeCap.Round))
+                    // Wheels
+                    drawCircle(
+                        color = col,
+                        radius = w * 0.08f,
+                        center = androidx.compose.ui.geometry.Offset(w * 0.45f, h * 0.82f)
+                    )
+                    drawCircle(
+                        color = col,
+                        radius = w * 0.08f,
+                        center = androidx.compose.ui.geometry.Offset(w * 0.78f, h * 0.82f)
+                    )
                 }
-                drawPath(path = cartPath, color = col, style = Stroke(width = strokeW, cap = StrokeCap.Round))
-                // Wheels
-                drawCircle(col, radius = w * 0.1f, center = androidx.compose.ui.geometry.Offset(w * 0.42f, h * 0.78f))
-                drawCircle(col, radius = w * 0.1f, center = androidx.compose.ui.geometry.Offset(w * 0.82f, h * 0.78f))
+
+                if (cartCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 4.dp, end = 4.dp)
+                            .size(16.dp)
+                            .clip(CircleShape)
+                            .background(Color.Red)
+                            .border(1.dp, Color.White, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = cartCount.toString(),
+                            color = Color.White,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }
@@ -1603,5 +1830,237 @@ fun BottomNavItem(
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
             color = if (isSelected) activeColor else inactiveColor
         )
+    }
+}
+
+@Composable
+fun HomeFilteredProductsSection(
+    products: List<com.snehil.minori.domain.model.Product>,
+    selectedCategoryId: Int,
+    wishlistedIds: Set<String>,
+    onWishlistToggle: (com.snehil.minori.domain.model.Product) -> Unit,
+    onViewCeramics: () -> Unit,
+    onViewPaintings: () -> Unit,
+    onViewFineArts: () -> Unit,
+    isDark: Boolean,
+    textColor: Color,
+    cardBg: Color,
+    onProductClick: (String, String) -> Unit
+) {
+    val accentColor = if (isDark) SoftTerracotta else Terracotta
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        // If a specific category is selected, show a banner to open the dedicated page!
+        if (selectedCategoryId in 1..3) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(accentColor.copy(alpha = 0.15f))
+                    .clickable {
+                        when (selectedCategoryId) {
+                            1 -> onViewCeramics()
+                            2 -> onViewPaintings()
+                            3 -> onViewFineArts()
+                        }
+                    }
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val label = when (selectedCategoryId) {
+                        1 -> "Explore Ceramic firing & clay types →"
+                        2 -> "Explore Painting medium & frame details →"
+                        3 -> "Explore Fine Arts editions & certificates →"
+                        else -> ""
+                    }
+                    Text(
+                        text = label,
+                        color = accentColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            SpacerHeight(16)
+        }
+        Text(
+            text = "Featured Products (${products.size})",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = textColor,
+            fontFamily = FontFamily.Serif,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        if (products.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No products found matching filters.",
+                    color = if (isDark) Color(0xFFB4ADAC) else EarthyStone,
+                    fontSize = 14.sp
+                )
+            }
+        } else {
+            val rows = products.chunked(2)
+            rows.forEach { rowProducts ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    rowProducts.forEach { product ->
+                        Box(modifier = Modifier.weight(1f)) {
+                            HomeProductGridCard(
+                                product = product,
+                                isWishlisted = wishlistedIds.contains(product.id),
+                                onWishlistToggle = { onWishlistToggle(product) },
+                                isDark = isDark,
+                                cardBg = cardBg,
+                                textColor = textColor,
+                                onProductClick = onProductClick
+                            )
+                        }
+                    }
+                    if (rowProducts.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+                SpacerHeight(16)
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeProductGridCard(
+    product: com.snehil.minori.domain.model.Product,
+    isWishlisted: Boolean,
+    onWishlistToggle: () -> Unit,
+    isDark: Boolean,
+    cardBg: Color,
+    textColor: Color,
+    onProductClick: (String, String) -> Unit
+) {
+    val imgRes = getProductDrawableId(product.imageUrl)
+    val accentColor = if (isDark) SoftTerracotta else Terracotta
+    val descColor = if (isDark) Color(0xFFB4ADAC) else EarthyStone
+
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onProductClick(product.id, "Product") },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .background(if (isDark) Color(0xFF1C1917) else SandCream),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = imgRes),
+                    contentDescription = product.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.8f))
+                        .clickable { onWishlistToggle() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (isWishlisted) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Wishlist",
+                        tint = if (isWishlisted) Color.Red else Color.Gray,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+            }
+
+            Column(modifier = Modifier.padding(10.dp)) {
+                Text(
+                    text = product.name,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor,
+                    fontFamily = FontFamily.Serif,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+                SpacerHeight(2)
+                Text(
+                    text = product.description,
+                    fontSize = 11.sp,
+                    color = descColor,
+                    maxLines = 2,
+                    lineHeight = 14.sp,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+                SpacerHeight(6)
+
+                Text(
+                    text = "₹${product.price.toInt()}",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = accentColor
+                )
+
+                SpacerHeight(4)
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    repeat(5) { index ->
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star",
+                            tint = if (index < product.rating.toInt()) Color(0xFFFBBF24) else Color(0xFFE5E7EB),
+                            modifier = Modifier.size(10.dp)
+                        )
+                    }
+                    SpacerWidth(4)
+                    Text(
+                        text = "(${product.rating})",
+                        fontSize = 9.sp,
+                        color = if (isDark) Color(0xFF78716C) else Color(0xFF9CA3AF)
+                    )
+                }
+            }
+        }
+    }
+}
+
+fun getProductDrawableId(imageUrl: String): Int {
+    return when (imageUrl) {
+        "ceramic_bowl" -> com.snehil.minori.R.drawable.ceramic_bowl
+        "clay_pitcher" -> com.snehil.minori.R.drawable.clay_pitcher
+        "glass_carafe" -> com.snehil.minori.R.drawable.glass_carafe
+        "oak_chest" -> com.snehil.minori.R.drawable.oak_chest
+        "rattan_chair" -> com.snehil.minori.R.drawable.rattan_chair
+        "wool_rug" -> com.snehil.minori.R.drawable.wool_rug
+        "ceramic_mug" -> com.snehil.minori.R.drawable.ceramic_mug
+        "boho_candle" -> com.snehil.minori.R.drawable.boho_candle
+        "tapestry_wall" -> com.snehil.minori.R.drawable.tapestry_wall
+        "pottery_class" -> com.snehil.minori.R.drawable.pottery_class
+        "woven_basket" -> com.snehil.minori.R.drawable.woven_basket
+        "artisan_weaving" -> com.snehil.minori.R.drawable.artisan_weaving
+        else -> com.snehil.minori.R.drawable.ceramic_bowl
     }
 }

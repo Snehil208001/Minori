@@ -48,19 +48,57 @@ Minori features a curated, warm, and organic **bohemian brand identity** designe
 - **Special Offers & Collections**: High-fidelity promotional banners displaying hand-woven tapestries, wood chests, and decanter details.
 - **Bottom Navigation**: Sticky navigation bar with a prominent, floating circular Shopping Cart button in the center.
 
+### 5. 🛍️ Unified Shopping Cart
+- **Reactive State Management**: Powered by a Hilt-injected `@Singleton` `CartManager` exposing `StateFlow<List<CartItem>>` for live UI synchronization across all screens.
+- **Interactive Pill Quantity Controllers**: Easily increment, decrement, or remove items directly within the cart list.
+- **Procedural Canvas Graphics**: Displays custom vector illustrations including a hand-drawn empty cart basket and a trash-can delete icon.
+- **Detailed Billing Summary**: Summarizes Subtotal, Delivery Charges, GST (5%), and Grand Total in local currency (₹ INR).
+- **Checkout Overlay**: High-fidelity modal displaying a custom Canvas-drawn checkmark anim and generated Order Reference IDs (`#MN-XXXXXX`).
+
+### 6. 💖 Personal Collection (Wishlist)
+- **Global Wishlist Manager**: Hilt-injected `@Singleton` `WishlistManager` coordinates wishlisted states globally. Heart icons update instantly across feeds.
+- **Live Search Filtering**: Search saved artifacts by name or category on the fly.
+- **Curated Grid Layout**: Displays wishlisted items with star ratings, custom discount badges, origin tags, and a quick "Acquire" button.
+- **Empty State Feedback**: Features a custom Canvas-drawn bohemian woven basket illustrating an empty collection.
+
+### 7. 🔍 Interactive Product Details
+- **Detail Tabs**: Features dynamic tab navigation between *About* (editorial description), *Specs* (Maker name, materials, specifications, origin, and delivery times), and *Reviews* (authentic customer feedback and star counts).
+- **Custom Header Image**: Features floating circular action buttons for back navigation and cart access with a live badge count overlay.
+- **Quantity Selector**: Add multiple quantities before adding to the cart or checking out.
+- **Double CTA Actions**: Integrated "Add to Cart" and "Buy Now" bottom bar buttons styled with matching border brushes.
+
+### 8. 🏺 Category Specific Feeds
+- **Studio Ceramics**: Displays stoneware, porcelain, earthenware, and raku artifacts with firing temperature tags.
+- **Fine Arts**: Displays cast bronze, linocuts, hammered metal, and alabaster sculptures with custom edition annotations.
+- **Paintings**: Displays oil, watercolor, acrylic, and gouache studies with dimensions.
+- **Sort & Filter Menus**: Dropdown menus for sorting (Price, Ratings, Popularity) and filtering by material/medium on each category screen.
+
 ---
 
 ## 🏛️ Architecture Details
 
 The codebase adheres to clean Android architecture principles:
-- **MVI/MVVM Pattern**: ViewModels manage UI State and emit single-shot Side Effects (e.g., navigation events) to Composables.
-- **Generic Base ViewModel**: Exposes `BaseViewModel<State, Effect>` to handle unified states, asynchronous loading triggers (`isLoading`), error messages (`errorMessage`), and state update operations.
-- **Modular Packaging**:
-  - `core/navigation`: Custom Screen routes and NavHost controllers.
-  - `core/base`: Shared base classes.
-  - `mainui/authentication`: Auth components and Login/Signup/ForgotPassword screens.
-  - `mainui/homescreen`: Product grids and dashboard structures.
-  - `mainui/onboardingscreen` & `mainui/splashscreen`: Welcome animations and onboarding sequences.
+
+```mermaid
+graph TD
+    UI[Jetpack Compose UI Layer] --> VM[MVI/MVVM ViewModels]
+    VM --> Managers[Reactive State Managers / Cart & Wishlist]
+    VM --> Repo[ProductRepository]
+    Repo --> Data[ProductRegistry Static Database]
+```
+
+### Modular Packaging Structure
+- `core/navigation`: Custom Screen routes, NavHost controllers, and NavGraph routing.
+- `core/cart`: `CartManager` tracking item structures and totals.
+- `core/wishlist`: `WishlistManager` managing in-memory saved artifacts and mapping extensions.
+- `core/common`: `ProductRegistry` providing high-fidelity mocked catalog data for all feeds.
+- `domain/model`: Shared domain models (`Product`, `WishlistItem`, `CartItem`).
+- `mainui/authentication`: Auth components and Login/Signup/ForgotPassword screens.
+- `mainui/homescreen`: Main dashboard, search triggers, and bottom navigation controls.
+- `mainui/cartscreen`: Order summary, item list, and checkout overlay.
+- `mainui/wishlistscreen`: My Collection saved grid, filtering, and search inputs.
+- `mainui/productdetailscreen`: Product pages, tab contents, and review models.
+- `mainui/ceramicscreen`, `paintingscreen`, `fineartsscreen`: Specific listing pages with custom sorting & filtering menus.
 
 ---
 
@@ -84,5 +122,6 @@ Build the application and verify Kotlin compile checks via Gradle:
 ### Running the App
 Deploy the debug build to an active device or emulator:
 ```powershell
+# Install debug APK on your device/emulator
 .\gradlew installDebug
 ```

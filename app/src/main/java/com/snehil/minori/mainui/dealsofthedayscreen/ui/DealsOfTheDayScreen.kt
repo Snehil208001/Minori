@@ -80,8 +80,12 @@ import com.snehil.minori.ui.theme.SoftTerracotta
 
 @Composable
 fun DealsOfTheDayScreen(
+    onViewCart: () -> Unit,
+
     onNavigateBack: () -> Unit,
     onNavigateToProfile: () -> Unit,
+    onViewWishlist: () -> Unit,
+    onProductClick: (String, String) -> Unit,
     viewModel: DealsOfTheDayScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -108,10 +112,13 @@ fun DealsOfTheDayScreen(
     Scaffold(
         bottomBar = {
             MinoriBottomNavigation(
+                onCartClick = onViewCart,
+
                 selectedTab = 0,
                 onTabSelected = { index ->
                     when (index) {
                         0 -> viewModel.goBack()
+                        1 -> onViewWishlist()
                         3 -> onNavigateToProfile()
                     }
                 },
@@ -366,7 +373,8 @@ fun DealsOfTheDayScreen(
                                 cardBg = cardBg,
                                 textColor = textColor,
                                 descColor = descColor,
-                                accentColor = accentColor
+                                accentColor = accentColor,
+                                onProductClick = onProductClick
                             )
                         }
                     }
@@ -381,7 +389,8 @@ fun DealsOfTheDayScreen(
                             cardBg = cardBg,
                             textColor = textColor,
                             descColor = descColor,
-                            accentColor = accentColor
+                            accentColor = accentColor,
+                            onProductClick = onProductClick
                         )
                     }
                 }
@@ -490,13 +499,14 @@ fun FeaturedDealCard(
     cardBg: Color,
     textColor: Color,
     descColor: Color,
-    accentColor: Color
+    accentColor: Color,
+    onProductClick: (String, String) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().clickable { onProductClick(deal.id.toString(), "Deal") }
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Box(
@@ -652,12 +662,13 @@ fun DealFlashCard(
     cardBg: Color,
     textColor: Color,
     descColor: Color,
-    accentColor: Color
+    accentColor: Color,
+    onProductClick: (String, String) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onProductClick(deal.id.toString(), "Deal") },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {

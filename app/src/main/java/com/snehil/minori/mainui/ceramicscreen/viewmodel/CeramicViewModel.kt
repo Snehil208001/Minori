@@ -1,48 +1,46 @@
-package com.snehil.minori.mainui.newarrivalsscreen.viewmodel
+package com.snehil.minori.mainui.ceramicscreen.viewmodel
 
 import com.snehil.minori.R
 import com.snehil.minori.core.base.BaseViewModel
-import com.snehil.minori.mainui.newarrivalsscreen.model.ArrivalProduct
+import com.snehil.minori.mainui.ceramicscreen.model.CeramicProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.snehil.minori.core.wishlist.toWishlistItem
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
 
-data class NewArrivalsState(
+data class CeramicState(
     val searchQuery: String = "",
     val selectedCategory: String = "All",
     val selectedSort: String = "Popularity",
-    val products: List<ArrivalProduct> = emptyList(),
+    val products: List<CeramicProduct> = emptyList(),
     val wishlistedIds: Set<Int> = emptySet(),
-    val categories: List<String> = listOf("All", "Bags", "Home"),
+    val categories: List<String> = listOf("All", "Stoneware", "Porcelain", "Raku", "Earthenware"),
     val sortOptions: List<String> = listOf("Popularity", "Price: Low to High", "Price: High to Low")
 )
 
-sealed class NewArrivalsEffect {
-    object NavigateBack : NewArrivalsEffect()
+sealed class CeramicEffect {
+    object NavigateBack : CeramicEffect()
 }
 
 @HiltViewModel
-class NewArrivalsViewModel @Inject constructor(
+class CeramicViewModel @Inject constructor(
     private val wishlistManager: com.snehil.minori.core.wishlist.WishlistManager
-) : BaseViewModel<NewArrivalsState, NewArrivalsEffect>() {
+) : BaseViewModel<CeramicState, CeramicEffect>() {
 
     private val allProducts = listOf(
-        ArrivalProduct(1, "Organic Linen Tote", "Spacious summer tote bag with braided handles and hand-frayed fringe detailing.", 1450, 2000, "27% OFF", 4.8f, 34, R.drawable.linen_tote, "Bags", "100% Organic Linen"),
-        ArrivalProduct(2, "Rustic Linen Pillow", "Heavy-texture cream linen throw pillow cover with organic flax fibers.", 1200, 1600, "25% OFF", 4.6f, 27, R.drawable.linen_pillow, "Home", "100% Organic Linen"),
-        ArrivalProduct(3, "Hand-Braided Jute Rug", "Earthy natural round braided jute fiber rug for entryways.", 3200, 4000, "20% OFF", 4.7f, 18, R.drawable.wool_rug, "Home", "Natural Jute Fiber"),
-        ArrivalProduct(4, "Seagrass Market Basket", "Handwoven sturdy market carrier bag with brown leather handles.", 1800, 2400, "25% OFF", 4.8f, 52, R.drawable.woven_basket, "Bags", "Seagrass & Leather"),
-        ArrivalProduct(5, "Fringe Cotton Hanger", "Bohemian hand-knotted cotton rope hanger for plant pots.", 650, 900, "27% OFF", 4.5f, 67, R.drawable.macrame_hanger, "Home", "Organic Cotton Rope"),
-        ArrivalProduct(6, "Abstract Canvas Hanging", "Minimalist abstract screen-printed linen wall banner tapestry.", 2200, 3000, "26% OFF", 4.7f, 14, R.drawable.tapestry_wall, "Home", "Handwoven Cotton Linen")
+        CeramicProduct(1, "Speckled Stoneware Vase", "Elegant tall vase hand-thrown on the wheel, coated in oatmeal glaze.", 2800, 3500, "20% OFF", 4.8f, 74, R.drawable.clay_pitcher, "Stoneware", "1220°C"),
+        CeramicProduct(2, "Porcelain Sake Set", "Translucent white porcelain flask with four small cups, fine celadon wash.", 4200, 5000, "16% OFF", 4.9f, 38, R.drawable.glass_carafe, "Porcelain", "1300°C"),
+        CeramicProduct(3, "Matte Terra Serving Bowl", "Rustic wide serving bowl, raw terracotta exterior with glazed center.", 1900, 2500, "24% OFF", 4.7f, 112, R.drawable.ceramic_bowl, "Earthenware", "1080°C"),
+        CeramicProduct(4, "Raku Tea Cup", "Traditional crackle-glazed tea bowl, fired in a gas-fueled kiln.", 1500, 2000, "25% OFF", 5.0f, 49, R.drawable.ceramic_mug, "Raku", "950°C")
     )
 
-    override val initialState: NewArrivalsState = NewArrivalsState(products = allProducts)
+    override val initialState: CeramicState = CeramicState(products = allProducts)
 
     init {
         viewModelScope.launch {
             wishlistManager.wishlistFlow.collect { items ->
-                val wishlisted = items.filter { it.type == "ArrivalProduct" }.map { it.id.toInt() }.toSet()
+                val wishlisted = items.filter { it.type == "Ceramic" }.map { it.id.toInt() }.toSet()
                 updateState { it.copy(wishlistedIds = wishlisted) }
             }
         }
@@ -70,7 +68,7 @@ class NewArrivalsViewModel @Inject constructor(
     }
 
     fun goBack() {
-        emitEffect(NewArrivalsEffect.NavigateBack)
+        emitEffect(CeramicEffect.NavigateBack)
     }
 
     private fun filterAndSortProducts() {
@@ -81,14 +79,14 @@ class NewArrivalsViewModel @Inject constructor(
         var result = allProducts
 
         if (category != "All") {
-            result = result.filter { it.category == category }
+            result = result.filter { it.clayType == category }
         }
 
         if (query.isNotEmpty()) {
             result = result.filter {
                 it.title.lowercase().contains(query) ||
                 it.description.lowercase().contains(query) ||
-                it.materialUsed.lowercase().contains(query)
+                it.clayType.lowercase().contains(query)
             }
         }
 

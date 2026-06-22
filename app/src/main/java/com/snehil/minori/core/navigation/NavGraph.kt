@@ -18,10 +18,21 @@ import com.snehil.minori.mainui.newinstorescreen.ui.NewInStoreScreen
 import com.snehil.minori.mainui.potterypromoscreen.ui.PotteryPromoScreen
 import com.snehil.minori.mainui.newarrivalsscreen.ui.NewArrivalsScreen
 import com.snehil.minori.mainui.specialoffersscreen.ui.SpecialOffersScreen
+import com.snehil.minori.mainui.ceramicscreen.ui.CeramicScreen
+import com.snehil.minori.mainui.paintingscreen.ui.PaintingScreen
+import com.snehil.minori.mainui.fineartsscreen.ui.FineArtsScreen
+import com.snehil.minori.mainui.wishlistscreen.ui.WishlistScreen
+import com.snehil.minori.mainui.cartscreen.ui.CartScreen
+import com.snehil.minori.mainui.productdetailscreen.ui.ProductDetailScreen
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
 
 
 @Composable
 fun NavGraph(navController: NavHostController) {
+    val onProductClick: (String, String) -> Unit = { id, type ->
+        navController.navigate(Screen.ProductDetail.createRoute(id, type))
+    }
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
@@ -107,7 +118,23 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onViewSpecialOffers = {
                     navController.navigate(Screen.SpecialOffers.route)
-                }
+                },
+                onViewCeramics = {
+                    navController.navigate(Screen.Ceramics.route)
+                },
+                onViewPaintings = {
+                    navController.navigate(Screen.Paintings.route)
+                },
+                onViewFineArts = {
+                    navController.navigate(Screen.FineArts.route)
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
             )
         }
         composable(route = Screen.Profile.route) {
@@ -124,7 +151,14 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
-                }
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
             )
         }
         composable(route = Screen.DealsOfTheDay.route) {
@@ -134,7 +168,14 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
-                }
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
             )
         }
         composable(route = Screen.ArtisanSpotlight.route) {
@@ -144,7 +185,14 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
-                }
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
             )
         }
         composable(route = Screen.NewInStore.route) {
@@ -154,7 +202,14 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
-                }
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
             )
         }
         composable(route = Screen.PotteryPromo.route) {
@@ -164,7 +219,14 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
-                }
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
             )
         }
         composable(route = Screen.NewArrivals.route) {
@@ -174,7 +236,14 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
-                }
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
             )
         }
         composable(route = Screen.SpecialOffers.route) {
@@ -184,6 +253,107 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onNavigateToProfile = {
                     navController.navigate(Screen.Profile.route)
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
+            )
+        }
+        composable(route = Screen.Ceramics.route) {
+            CeramicScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
+            )
+        }
+        composable(route = Screen.Paintings.route) {
+            PaintingScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
+            )
+        }
+        composable(route = Screen.FineArts.route) {
+            FineArtsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onViewWishlist = {
+                    navController.navigate(Screen.Wishlist.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
+            )
+        }
+        composable(route = Screen.Wishlist.route) {
+            WishlistScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onProductClick = onProductClick
+            )
+        }
+        composable(route = Screen.Cart.route) {
+            CartScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                },
+                onProductClick = onProductClick
+            )
+        }
+        composable(
+            route = Screen.ProductDetail.route,
+            arguments = listOf(
+                navArgument("productId") { type = NavType.StringType },
+                navArgument("productType") { type = NavType.StringType }
+            )
+        ) {
+            ProductDetailScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onViewCart = {
+                    navController.navigate(Screen.Cart.route)
                 }
             )
         }

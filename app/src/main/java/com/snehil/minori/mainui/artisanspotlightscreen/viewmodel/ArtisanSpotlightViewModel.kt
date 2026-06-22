@@ -7,6 +7,7 @@ import com.snehil.minori.mainui.artisanspotlightscreen.model.ArtisanProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.snehil.minori.core.wishlist.toWishlistItem
 
 data class ArtisanSpotlightState(
     val searchQuery: String = "",
@@ -23,7 +24,9 @@ sealed class ArtisanSpotlightEffect {
 }
 
 @HiltViewModel
-class ArtisanSpotlightViewModel @Inject constructor() : BaseViewModel<ArtisanSpotlightState, ArtisanSpotlightEffect>() {
+class ArtisanSpotlightViewModel @Inject constructor(
+    private val wishlistManager: com.snehil.minori.core.wishlist.WishlistManager
+) : BaseViewModel<ArtisanSpotlightState, ArtisanSpotlightEffect>() {
 
     private val allProducts = listOf(
         ArtisanProduct(1, "Heritage Loom Rug", "Hand-knotted wool area rug featuring intricate geometrical motifs.", 5200, 6500, "20% OFF", 4.9f, 42, R.drawable.artisan_weaving, "Weaving", "Ananya Sen"),
@@ -37,6 +40,12 @@ class ArtisanSpotlightViewModel @Inject constructor() : BaseViewModel<ArtisanSpo
     override val initialState: ArtisanSpotlightState = ArtisanSpotlightState(products = allProducts)
 
     init {
+        viewModelScope.launch {
+            wishlistManager.wishlistFlow.collect { items ->
+                val wishlisted = items.filter { it.type == "ArtisanProduct" }.map { it.id.toInt() }.toSet()
+                updateState { it.copy(wishlistedIds = wishlisted) }
+            }
+        }
         filterAndSortProducts()
     }
 
@@ -56,15 +65,8 @@ class ArtisanSpotlightViewModel @Inject constructor() : BaseViewModel<ArtisanSpo
     }
 
     fun toggleWishlist(productId: Int) {
-        updateState { state ->
-            val updated = state.wishlistedIds.toMutableSet()
-            if (updated.contains(productId)) {
-                updated.remove(productId)
-            } else {
-                updated.add(productId)
-            }
-            state.copy(wishlistedIds = updated)
-        }
+        val product = allProducts.find { it.id == productId } ?: return
+        wishlistManager.toggleWishlist(product.toWishlistItem())
     }
 
     fun goBack() {

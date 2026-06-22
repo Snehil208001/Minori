@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.snehil.minori.core.wishlist.toWishlistItem
 
 data class DealsState(
     val searchQuery: String = "",
@@ -25,7 +26,9 @@ sealed class DealsEffect {
 }
 
 @HiltViewModel
-class DealsOfTheDayScreenViewModel @Inject constructor() : BaseViewModel<DealsState, DealsEffect>() {
+class DealsOfTheDayScreenViewModel @Inject constructor(
+    private val wishlistManager: com.snehil.minori.core.wishlist.WishlistManager
+) : BaseViewModel<DealsState, DealsEffect>() {
 
     private val allDeals = listOf(
         Deal(1, "Handmade Clay Pitcher", "Warm Sage-wash handthrown rustic clay water pitcher.", 999, 1999, "50% OFF", 4.7f, 85, R.drawable.clay_pitcher, "Clayware"),
@@ -45,6 +48,12 @@ class DealsOfTheDayScreenViewModel @Inject constructor() : BaseViewModel<DealsSt
     private var timerJob: kotlinx.coroutines.Job? = null
 
     init {
+        viewModelScope.launch {
+            wishlistManager.wishlistFlow.collect { items ->
+                val wishlisted = items.filter { it.type == "Deal" }.map { it.id.toInt() }.toSet()
+                updateState { it.copy(wishlistedIds = wishlisted) }
+            }
+        }
         startTimer()
         filterAndSortDeals()
     }
@@ -75,15 +84,8 @@ class DealsOfTheDayScreenViewModel @Inject constructor() : BaseViewModel<DealsSt
     }
 
     fun toggleWishlist(dealId: Int) {
-        updateState { state ->
-            val updated = state.wishlistedIds.toMutableSet()
-            if (updated.contains(dealId)) {
-                updated.remove(dealId)
-            } else {
-                updated.add(dealId)
-            }
-            state.copy(wishlistedIds = updated)
-        }
+        val deal = allDeals.find { it.id == dealId } ?: return
+        wishlistManager.toggleWishlist(deal.toWishlistItem())
     }
 
     fun getFormattedTime(): String {

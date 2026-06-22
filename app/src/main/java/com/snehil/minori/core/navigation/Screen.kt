@@ -15,4 +15,13 @@ sealed class Screen(val route: String) {
     object PotteryPromo : Screen("pottery_promo")
     object NewArrivals : Screen("new_arrivals")
     object SpecialOffers : Screen("special_offers")
+    object Ceramics : Screen("ceramics")
+    object Paintings : Screen("paintings")
+    object FineArts : Screen("fine_arts")
+    object Wishlist : Screen("wishlist")
+    object Cart : Screen("cart")
+    object ProductDetail : Screen("product_detail/{productId}/{productType}") {
+        fun createRoute(productId: String, productType: String) = "product_detail/$productId/$productType"
+    }
 }
+

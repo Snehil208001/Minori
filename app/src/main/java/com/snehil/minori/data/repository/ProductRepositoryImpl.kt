@@ -22,9 +22,16 @@ class ProductRepositoryImpl @Inject constructor() : ProductRepository {
 
     override fun getProducts(): Flow<List<Product>> = flow {
         emit(listOf(
-            Product("p1", "Earthy Ceramic Vase", 45.0, 4.8f, 1, "Handmade ceramic vase with organic textures.", ""),
-            Product("p2", "Abstract Canvas Art", 120.0, 4.9f, 2, "Modern abstract painting on cotton canvas.", ""),
-            Product("p3", "Woven Wall Hanging", 75.0, 4.7f, 3, "Handwoven fiber art tapestry for home decor.", "")
+            Product("p1", "Earthy Ceramic Bowl", 1850.0, 4.7f, 1, "Hand-thrown clay bowl with natural white glaze.", "ceramic_bowl"),
+            Product("p2", "Terracotta Clay Pitcher", 2400.0, 4.9f, 1, "Traditional rustic pitcher for fresh water or decor.", "clay_pitcher"),
+            Product("p3", "Glass Vase / Carafe", 2650.0, 4.5f, 5, "Blown decanter in warm amber gradient shade.", "glass_carafe"),
+            Product("p4", "Oak Carved Chest", 6850.0, 4.8f, 4, "Handcrafted organic frame drawer with brass keys.", "oak_chest"),
+            Product("p5", "Rattan Lounge Chair", 8500.0, 4.6f, 4, "Minimalist modern handwoven rattan armchair.", "rattan_chair"),
+            Product("p6", "Woven Tribal Rug", 4900.0, 4.7f, 3, "Bohemian woven wool rug with geo-patterns.", "wool_rug"),
+            Product("p7", "Speckled Clay Mug", 850.0, 4.8f, 1, "Cozy speckled mug with flat base and large handle.", "ceramic_mug"),
+            Product("p8", "Scented Soy Candle", 950.0, 4.9f, 2, "Soy wax candle in a reusable clay pot container.", "boho_candle"),
+            Product("p9", "Woven Wall Tapestry", 3200.0, 4.4f, 3, "Handcrafted abstract cotton/wool wall hanging.", "tapestry_wall"),
+            Product("p10", "Fringe Seagrass Basket", 1600.0, 4.8f, 4, "Large woven laundry or blanket hamper with detailed braids.", "woven_basket")
         ))
     }
 
