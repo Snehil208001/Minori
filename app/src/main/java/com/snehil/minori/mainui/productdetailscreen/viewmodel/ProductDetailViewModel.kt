@@ -20,6 +20,7 @@ data class ProductDetailState(
 
 sealed interface ProductDetailEffect {
     object NavigateBack : ProductDetailEffect
+    object NavigateToAddressDetails : ProductDetailEffect
     data class ShowToast(val message: String) : ProductDetailEffect
 }
 
@@ -93,8 +94,9 @@ class ProductDetailViewModel @Inject constructor(
 
     fun buyNow() {
         val item = currentState.product ?: return
+        cartManager.clearCart()
         cartManager.addToCart(item, currentState.quantity)
-        emitEffect(ProductDetailEffect.ShowToast("Proceeding to checkout with ${item.name}!"))
+        emitEffect(ProductDetailEffect.NavigateToAddressDetails)
     }
 
     fun goBack() {

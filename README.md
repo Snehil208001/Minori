@@ -73,6 +73,22 @@ Minori features a curated, warm, and organic **bohemian brand identity** designe
 - **Paintings**: Displays oil, watercolor, acrylic, and gouache studies with dimensions.
 - **Sort & Filter Menus**: Dropdown menus for sorting (Price, Ratings, Popularity) and filtering by material/medium on each category screen.
 
+### 9. 🔍 Advanced Search Engine
+- **Live Search Filtering**: Real-time product filtering and search matching as the user types.
+- **Search History**: Stores and manages recent search history items for quick re-entry.
+- **Aesthetic Empty States**: Displays custom Canvas-drawn bohemian illustration when no matching products are found.
+
+### 10. 💳 Multi-Step Checkout Flow
+- **State Coordination**: Supported by a Hilt-injected `@Singleton` `CheckoutManager` managing address structures, shipping selections, and payment method choices.
+- **Address Details Screen**: Elegant text entry fields with validation feedback, address type selection (Home/Work), and persistent state.
+- **Order Preview Screen**: Comprehensive billing breakdown including item totals, selected shipping method, GST, and final summary pricing.
+- **Payment Portal**: Interactive choice of payment methods (Card, UPI, Cash on Delivery, NetBanking) with dynamic modern card layouts and order placement confirmation.
+
+### 11. ⚙️ Settings & Customization
+- **Theme Switcher**: Fluid toggle for Dark Mode supporting Light (bohemian SandCream) and Dark (Obsidian slate) themes.
+- **Profile & Preferences**: Clean, structured dashboard providing access to user profile information, order notifications, and support resources.
+- **Secure Logout**: Safely clears state managers and navigates users back to the authentication portal.
+
 ---
 
 ## 🏛️ Architecture Details
@@ -91,6 +107,7 @@ graph TD
 - `core/navigation`: Custom Screen routes, NavHost controllers, and NavGraph routing.
 - `core/cart`: `CartManager` tracking item structures and totals.
 - `core/wishlist`: `WishlistManager` managing in-memory saved artifacts and mapping extensions.
+- `core/checkout`: `CheckoutManager` managing address, shipping, and payment state during checkout.
 - `core/common`: `ProductRegistry` providing high-fidelity mocked catalog data for all feeds.
 - `domain/model`: Shared domain models (`Product`, `WishlistItem`, `CartItem`).
 - `mainui/authentication`: Auth components and Login/Signup/ForgotPassword screens.
@@ -98,6 +115,9 @@ graph TD
 - `mainui/cartscreen`: Order summary, item list, and checkout overlay.
 - `mainui/wishlistscreen`: My Collection saved grid, filtering, and search inputs.
 - `mainui/productdetailscreen`: Product pages, tab contents, and review models.
+- `mainui/searchscreen`: Query bar, matching categories, search history, and empty states.
+- `mainui/settingsscreen`: Configuration options, notifications, and Dark Mode theme toggling.
+- `mainui/addressdetailscreen`, `orderpreviewscreen`, `paymentscreen`: Modularized step-by-step checkout UI flow components.
 - `mainui/ceramicscreen`, `paintingscreen`, `fineartsscreen`: Specific listing pages with custom sorting & filtering menus.
 
 ---

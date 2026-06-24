@@ -76,6 +76,7 @@ import com.snehil.minori.ui.theme.Terracotta
 fun CartScreen(
     onNavigateBack: () -> Unit,
     onNavigateToHome: () -> Unit,
+    onNavigateToAddressDetails: () -> Unit,
     onProductClick: (String, String) -> Unit,
     viewModel: CartViewModel = hiltViewModel()
 ) {
@@ -88,6 +89,7 @@ fun CartScreen(
             when (effect) {
                 CartEffect.NavigateBack -> onNavigateBack()
                 CartEffect.NavigateToHome -> onNavigateToHome()
+                CartEffect.NavigateToAddressDetails -> onNavigateToAddressDetails()
                 is CartEffect.ShowToast -> {
                     Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }

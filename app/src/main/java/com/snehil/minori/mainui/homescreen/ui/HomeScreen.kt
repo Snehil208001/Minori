@@ -44,6 +44,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.DrawerValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.HorizontalDivider
+import android.widget.Toast
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -94,6 +107,8 @@ fun HomeScreen(
     onViewFineArts: () -> Unit,
     onViewWishlist: () -> Unit,
     onViewCart: () -> Unit,
+    onViewSearch: () -> Unit,
+    onViewSettings: () -> Unit,
     onProductClick: (String, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -104,19 +119,44 @@ fun HomeScreen(
     val textColor = if (isDark) SandCream else CharcoalText
     val descColor = if (isDark) Color(0xFFB4ADAC) else EarthyStone
     val cardBg = if (isDark) Color(0xFF292524) else Color.White
+    val accentColor = if (isDark) SoftTerracotta else Terracotta
+    val dividerColor = if (isDark) Color(0xFF44403C) else Color(0xFFE5E7EB)
 
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
     var selectedNavTab by remember { mutableIntStateOf(0) }
 
-    Scaffold(
-        bottomBar = {
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            MinoriDrawerContent(
+                onNavigateToProfile = onNavigateToProfile,
+                onViewWishlist = onViewWishlist,
+                onViewCart = onViewCart,
+                onViewSearch = onViewSearch,
+                onViewSettings = onViewSettings,
+                onCloseDrawer = { coroutineScope.launch { drawerState.close() } },
+                isDark = isDark,
+                textColor = textColor,
+                descColor = descColor,
+                cardBg = cardBg,
+                accentColor = accentColor,
+                dividerColor = dividerColor
+            )
+        }
+    ) {
+        Scaffold(
+            bottomBar = {
             MinoriBottomNavigation(
                 selectedTab = selectedNavTab,
                 onTabSelected = {
                     selectedNavTab = it
                     if (it == 1) {
                         onViewWishlist()
+                    } else if (it == 2) {
+                        onViewSearch()
                     } else if (it == 3) {
-                        onNavigateToProfile()
+                        onViewSettings()
                     }
                 },
                 onCartClick = onViewCart,
@@ -145,7 +185,10 @@ fun HomeScreen(
                 isDark = isDark,
                 textColor = textColor,
                 cardBg = cardBg,
-                onNavigateToProfile = onNavigateToProfile
+                onNavigateToProfile = onNavigateToProfile,
+                onMenuClick = {
+                    coroutineScope.launch { drawerState.open() }
+                }
             )
 
             SpacerHeight(16)
@@ -266,6 +309,7 @@ fun HomeScreen(
         }
     }
 }
+}
 
 // 1. Top Bar Component
 @Composable
@@ -273,7 +317,8 @@ fun HomeTopBar(
     isDark: Boolean,
     textColor: Color,
     cardBg: Color,
-    onNavigateToProfile: () -> Unit
+    onNavigateToProfile: () -> Unit,
+    onMenuClick: () -> Unit
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     Row(
@@ -285,9 +330,7 @@ fun HomeTopBar(
     ) {
         // Menu Button
         IconButton(
-            onClick = {
-                android.widget.Toast.makeText(context, "Menu opened (coming soon!)", android.widget.Toast.LENGTH_SHORT).show()
-            },
+            onClick = onMenuClick,
             colors = IconButtonDefaults.iconButtonColors(containerColor = cardBg),
             modifier = Modifier
                 .size(44.dp)
@@ -2062,5 +2105,250 @@ fun getProductDrawableId(imageUrl: String): Int {
         "woven_basket" -> com.snehil.minori.R.drawable.woven_basket
         "artisan_weaving" -> com.snehil.minori.R.drawable.artisan_weaving
         else -> com.snehil.minori.R.drawable.ceramic_bowl
+    }
+}
+
+@Composable
+fun MinoriDrawerContent(
+    onNavigateToProfile: () -> Unit,
+    onViewWishlist: () -> Unit,
+    onViewCart: () -> Unit,
+    onViewSearch: () -> Unit,
+    onViewSettings: () -> Unit,
+    onCloseDrawer: () -> Unit,
+    isDark: Boolean,
+    textColor: Color,
+    descColor: Color,
+    cardBg: Color,
+    accentColor: Color,
+    dividerColor: Color
+) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    ModalDrawerSheet(
+        drawerContainerColor = if (isDark) Color(0xFF1C1917) else SandCream,
+        drawerContentColor = textColor,
+        modifier = Modifier.width(300.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+        ) {
+            // Drawer Header
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(bottom = 20.dp)
+            ) {
+                // Circle Monogram Logo
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(accentColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "M",
+                        color = if (isDark) CharcoalText else Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontFamily = FontFamily.Serif
+                    )
+                }
+                SpacerWidth(12)
+                Column {
+                    Text(
+                        text = "Minori",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Serif,
+                        color = textColor
+                    )
+                    Text(
+                        text = "Artisan Marketplace",
+                        fontSize = 11.sp,
+                        color = descColor
+                    )
+                }
+            }
+
+            // User Info Section
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = cardBg),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(if (isDark) Color(0xFF44403C) else Color(0xFFE5E7EB)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "User",
+                            tint = accentColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    SpacerWidth(10)
+                    Column {
+                        Text(
+                            text = "Boho Artisan Studio",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = textColor
+                        )
+                        Text(
+                            text = "cozyboho@minori.com",
+                            fontSize = 10.sp,
+                            color = descColor
+                        )
+                    }
+                }
+            }
+
+            SpacerHeight(24)
+            HorizontalDivider(color = dividerColor)
+            SpacerHeight(16)
+
+            // Shortcuts
+            Text(
+                text = "Navigation Shortcuts",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = accentColor,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            DrawerItemRow(
+                icon = Icons.Default.Home,
+                title = "Home Marketplace",
+                textColor = textColor,
+                onClick = {
+                    onCloseDrawer()
+                }
+            )
+
+            DrawerItemRow(
+                icon = Icons.Default.Person,
+                title = "Edit Profile & Bank Details",
+                textColor = textColor,
+                onClick = {
+                    onCloseDrawer()
+                    onNavigateToProfile()
+                }
+            )
+
+            DrawerItemRow(
+                icon = Icons.Default.ShoppingCart,
+                title = "My Shopping Cart",
+                textColor = textColor,
+                onClick = {
+                    onCloseDrawer()
+                    onViewCart()
+                }
+            )
+
+            DrawerItemRow(
+                icon = Icons.Default.Favorite,
+                title = "My Wishlist",
+                textColor = textColor,
+                onClick = {
+                    onCloseDrawer()
+                    onViewWishlist()
+                }
+            )
+
+            DrawerItemRow(
+                icon = Icons.Default.Search,
+                title = "Search Products",
+                textColor = textColor,
+                onClick = {
+                    onCloseDrawer()
+                    onViewSearch()
+                }
+            )
+
+            DrawerItemRow(
+                icon = Icons.Default.Settings,
+                title = "App Settings",
+                textColor = textColor,
+                onClick = {
+                    onCloseDrawer()
+                    onViewSettings()
+                }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            HorizontalDivider(color = dividerColor)
+            SpacerHeight(12)
+
+            // Logout row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        onCloseDrawer()
+                        Toast.makeText(context, "Sign out clicked (Go to Settings to log out)", Toast.LENGTH_SHORT).show()
+                    }
+                    .padding(vertical = 10.dp, horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ExitToApp,
+                    contentDescription = "Sign Out",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+                SpacerWidth(12)
+                Text(
+                    text = "Sign Out",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Red
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DrawerItemRow(
+    icon: ImageVector,
+    title: String,
+    textColor: Color,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onClick() }
+            .padding(vertical = 10.dp, horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = textColor.copy(alpha = 0.7f),
+            modifier = Modifier.size(20.dp)
+        )
+        SpacerWidth(12)
+        Text(
+            text = title,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = textColor
+        )
     }
 }

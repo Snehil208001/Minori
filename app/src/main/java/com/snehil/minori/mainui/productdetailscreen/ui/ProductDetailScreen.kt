@@ -83,6 +83,7 @@ import com.snehil.minori.ui.theme.Terracotta
 fun ProductDetailScreen(
     onNavigateBack: () -> Unit,
     onViewCart: () -> Unit,
+    onNavigateToAddressDetails: () -> Unit,
     viewModel: ProductDetailViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -92,6 +93,7 @@ fun ProductDetailScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 ProductDetailEffect.NavigateBack -> onNavigateBack()
+                ProductDetailEffect.NavigateToAddressDetails -> onNavigateToAddressDetails()
                 is ProductDetailEffect.ShowToast -> {
                     Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }

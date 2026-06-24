@@ -21,6 +21,7 @@ data class CartState(
 sealed interface CartEffect {
     object NavigateBack : CartEffect
     object NavigateToHome : CartEffect
+    object NavigateToAddressDetails : CartEffect
     data class ShowToast(val message: String) : CartEffect
 }
 
@@ -75,15 +76,7 @@ class CartViewModel @Inject constructor(
             emitEffect(CartEffect.ShowToast("Your cart is empty!"))
             return
         }
-        viewModelScope.launch {
-            setLoading(true)
-            // Mock server response delay
-            kotlinx.coroutines.delay(1000)
-            setLoading(false)
-            updateState { it.copy(checkoutSuccess = true) }
-            cartManager.clearCart()
-            emitEffect(CartEffect.ShowToast("Order placed successfully!"))
-        }
+        emitEffect(CartEffect.NavigateToAddressDetails)
     }
 
     fun resetCheckout() {

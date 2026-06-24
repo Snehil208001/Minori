@@ -23,7 +23,12 @@ import com.snehil.minori.mainui.paintingscreen.ui.PaintingScreen
 import com.snehil.minori.mainui.fineartsscreen.ui.FineArtsScreen
 import com.snehil.minori.mainui.wishlistscreen.ui.WishlistScreen
 import com.snehil.minori.mainui.cartscreen.ui.CartScreen
+import com.snehil.minori.mainui.addressdetailscreen.ui.AddressDetailsScreen
+import com.snehil.minori.mainui.orderpreviewscreen.ui.OrderPreviewScreen
+import com.snehil.minori.mainui.paymentscreen.ui.PaymentScreen
 import com.snehil.minori.mainui.productdetailscreen.ui.ProductDetailScreen
+import com.snehil.minori.mainui.searchscreen.ui.SearchScreen
+import com.snehil.minori.mainui.settingsscreen.ui.SettingsScreen
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
 
@@ -134,7 +139,36 @@ fun NavGraph(navController: NavHostController) {
                 onViewCart = {
                     navController.navigate(Screen.Cart.route)
                 },
+                onViewSearch = {
+                    navController.navigate(Screen.Search.route)
+                },
+                onViewSettings = {
+                    navController.navigate(Screen.Settings.route)
+                },
                 onProductClick = onProductClick
+            )
+        }
+        composable(route = Screen.Search.route) {
+            SearchScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProductDetail = onProductClick
+            )
+        }
+        composable(route = Screen.Settings.route) {
+            SettingsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
         composable(route = Screen.Profile.route) {
@@ -338,7 +372,47 @@ fun NavGraph(navController: NavHostController) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
                 },
+                onNavigateToAddressDetails = {
+                    navController.navigate(Screen.AddressDetails.route)
+                },
                 onProductClick = onProductClick
+            )
+        }
+        composable(route = Screen.AddressDetails.route) {
+            AddressDetailsScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                },
+                onNavigateToOrderPreview = {
+                    navController.navigate(Screen.OrderPreview.route)
+                }
+            )
+        }
+        composable(route = Screen.OrderPreview.route) {
+            OrderPreviewScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToPayment = {
+                    navController.navigate(Screen.Payment.route)
+                }
+            )
+        }
+        composable(route = Screen.Payment.route) {
+            PaymentScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(
@@ -354,6 +428,9 @@ fun NavGraph(navController: NavHostController) {
                 },
                 onViewCart = {
                     navController.navigate(Screen.Cart.route)
+                },
+                onNavigateToAddressDetails = {
+                    navController.navigate(Screen.AddressDetails.route)
                 }
             )
         }

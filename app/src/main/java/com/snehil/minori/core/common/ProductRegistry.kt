@@ -151,4 +151,22 @@ object ProductRegistry {
         
         return item
     }
+
+    fun getAllProducts(): List<WishlistItem> {
+        val uniqueProducts = mutableMapOf<String, WishlistItem>()
+        val allLists = listOf(
+            homeProducts, trendingProducts, ceramicProducts, paintingProducts,
+            fineArtsProducts, artisanProducts, arrivalProducts, newProducts,
+            potteryProducts, specialOffers, deals
+        )
+        for (list in allLists) {
+            for (item in list) {
+                val key = item.name + "_" + item.price
+                if (!uniqueProducts.containsKey(key)) {
+                    uniqueProducts[key] = item
+                }
+            }
+        }
+        return uniqueProducts.values.toList()
+    }
 }
